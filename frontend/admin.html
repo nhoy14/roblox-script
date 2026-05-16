@@ -370,8 +370,8 @@
                             <p class="text-xs text-gray-400 truncate">${s.author} • <span class="${badgeColor} px-1 rounded border text-[10px]">${s.badge}</span></p>
                         </div>
                         <div class="flex gap-1">
-                            <button onclick="editScript(${s.id})" class="w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteItem('scripts', ${s.id})" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editScript('${s.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteItem('scripts', '${s.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`;
             });
