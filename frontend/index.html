@@ -193,7 +193,7 @@
 
     // --- FETCH DATA ---
     async function loadData() {
-        const [sRes, eRes] = await Promise.all([fetch('/api/scripts'), fetch('/api/executors')]);
+        const [sRes, eRes] = await Promise.all([fetch('https://roblox-script-4dl2.onrender.com/api/scripts'), fetch('https://roblox-script-4dl2.onrender.com/api/executors')]);
         scripts = await sRes.json();
         executors = await eRes.json();
         renderScripts();
@@ -223,7 +223,7 @@
                     <div class="card">
                         <div class="card-img-box">
                             <span class="badge">${s.badge}</span>
-                            <img src="${s.image}" onerror="this.src='https://via.placeholder.com/300'">
+                            <img src="${s.image && s.image.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + s.image : s.image}" onerror="this.src='https://via.placeholder.com/300'">
                         </div>
                         <h3>${s.title}</h3>
                         <div class="meta">
@@ -249,7 +249,7 @@
                 <div class="exec-card status-${e.status}">
                     <div class="exec-body">
                         <div class="exec-icon">
-                            ${e.image ? `<img src="${e.image}">` : '<i class="fas fa-microchip"></i>'}
+                            ${e.image ? `<img src="${e.image && e.image.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + e.image : e.image}">` : '<i class="fas fa-microchip"></i>'}
                         </div>
                         <div class="exec-info">
                             <h3>${e.title} <span class="exec-tag">${e.tag}</span></h3>

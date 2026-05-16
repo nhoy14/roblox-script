@@ -442,9 +442,11 @@
             fileNameEl.classList.add('text-primary');
 
             try {
-                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/upload', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (data.url) {
+                    const fullUrl = data.url.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + data.url : data.url;
+                    data.url = fullUrl;
                     document.getElementById('eAvatarUrl').value = data.url;
                     fileNameEl.innerText = file.name;
                     fileNameEl.classList.remove('text-primary');
@@ -468,7 +470,7 @@
             if (newPass) data.password = newPass;
 
             try {
-                const res = await fetch('/api/users/' + user.id, { 
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/users/' + user.id, { 
                     method: 'PUT', 
                     headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify(data) 
@@ -508,9 +510,11 @@
             fileNameEl.classList.add('text-primary');
 
             try {
-                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/upload', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (data.url) {
+                    const fullUrl = data.url.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + data.url : data.url;
+                    data.url = fullUrl;
                     document.getElementById('pImage').value = data.url;
                     fileNameEl.innerText = file.name;
                     fileNameEl.classList.remove('text-primary');
@@ -540,7 +544,7 @@
             };
 
             try {
-                const res = await fetch('/api/scripts', { 
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/scripts', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify(data) 
@@ -571,7 +575,7 @@
 
         async function fetchMyScripts() {
             try {
-                const res = await fetch('/api/scripts');
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/scripts');
                 const allScripts = await res.json();
                 const myScripts = allScripts.filter(s => s.author === user.username);
                 
@@ -651,7 +655,7 @@
         async function softDeleteScript(id) {
             if(!confirm("Are you sure you want to delete this script?")) return;
             try {
-                await fetch('/api/scripts/' + id, {
+                await fetch('https://roblox-script-4dl2.onrender.com/api/scripts/' + id, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ deleted: true })
@@ -662,7 +666,7 @@
 
         async function restoreScript(id) {
             try {
-                await fetch('/api/scripts/' + id, {
+                await fetch('https://roblox-script-4dl2.onrender.com/api/scripts/' + id, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ deleted: false })

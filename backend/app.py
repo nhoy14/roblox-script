@@ -5,6 +5,7 @@ import threading
 import time
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask_cors import CORS
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,7 @@ DATA_FILE = os.path.join(BASE_DIR, 'database.json')
 app = Flask(__name__, 
             template_folder=FRONTEND_DIR, 
             static_folder=FRONTEND_DIR)
+CORS(app)  # Allow cross-origin requests from Vercel
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

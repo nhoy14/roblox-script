@@ -304,14 +304,15 @@
             btn.disabled = true;
 
             try {
-                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const res = await fetch('https://roblox-script-4dl2.onrender.com/api/upload', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (data.url) {
-                    document.getElementById(prefix + 'Image').value = data.url;
+                    const fullUrl = data.url.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + data.url : data.url;
+                    document.getElementById(prefix + 'Image').value = fullUrl;
                     
                     // Update previews based on prefix
                     if(prefix === 's') {
-                        document.getElementById('sPreview').src = data.url;
+                        document.getElementById('sPreview').src = fullUrl;
                         document.getElementById('sPreview').classList.remove('hidden');
                         updateLivePreview();
                     } else if (prefix === 'e') {
@@ -342,9 +343,9 @@
         async function loadData() {
             try {
                 const [sRes, eRes, uRes] = await Promise.all([
-                    fetch('/api/scripts'), 
-                    fetch('/api/executors'),
-                    fetch('/api/users/all')
+                    fetch('https://roblox-script-4dl2.onrender.com/api/scripts'), 
+                    fetch('https://roblox-script-4dl2.onrender.com/api/executors'),
+                    fetch('https://roblox-script-4dl2.onrender.com/api/users/all')
                 ]);
                 scripts = await sRes.json();
                 executors = await eRes.json();
@@ -363,7 +364,7 @@
                 const badgeColor = s.badge === 'Key' ? 'text-red-400 border-red-500/30 bg-red-500/10' : 'text-green-400 border-green-500/30 bg-green-500/10';
                 container.innerHTML += `
                     <div class="glass-panel p-4 rounded-xl flex items-center gap-4 transition hover:bg-white/5">
-                        <img src="${s.image}" class="w-12 h-12 rounded-lg object-cover bg-white/10" onerror="this.src='https://via.placeholder.com/60'">
+                        <img src="${s.image && s.image.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + s.image : s.image}" class="w-12 h-12 rounded-lg object-cover bg-white/10" onerror="this.src='https://via.placeholder.com/60'">
                         <div class="flex-1 min-w-0">
                             <h4 class="text-white font-bold truncate">${s.title}</h4>
                             <p class="text-xs text-gray-400 truncate">${s.author} • <span class="${badgeColor} px-1 rounded border text-[10px]">${s.badge}</span></p>
@@ -385,7 +386,7 @@
                 container.innerHTML += `
                     <div class="glass-panel p-4 rounded-xl flex items-center gap-4 transition hover:bg-white/5 relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}"></div>
-                        <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-2xl text-gray-300 relative overflow-hidden">${e.image ? `<img src="${e.image}" class="w-full h-full object-cover rounded-lg absolute inset-0">` : '<i class="fa-solid fa-microchip"></i>'}</div>
+                        <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-2xl text-gray-300 relative overflow-hidden">${e.image ? `<img src="${e.image && e.image.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + e.image : e.image}" class="w-full h-full object-cover rounded-lg absolute inset-0">` : '<i class="fa-solid fa-microchip"></i>'}</div>
                         <div class="flex-1 min-w-0"><h4 class="text-white font-bold flex items-center gap-2">${e.title} <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-normal">${e.tag}</span></h4><p class="text-xs text-gray-400 truncate">${e.platform}</p></div>
                         <div class="flex gap-1"><button onclick="editExecutor('${e.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('executors', '${e.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>
                     </div>`;
@@ -403,7 +404,7 @@
                     container.innerHTML += `
                         <tr class="hover:bg-white/5 transition group">
                             <td class="p-4 flex items-center gap-3">
-                                <img src="${u.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed='+u.username}" class="w-10 h-10 rounded-full bg-black/50 border border-white/10">
+                                <img src="${u.avatar && u.avatar.startsWith('/') ? 'https://roblox-script-4dl2.onrender.com' + u.avatar : u.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed='+u.username}" class="w-10 h-10 rounded-full bg-black/50 border border-white/10">
                                 <div>
                                     <div class="font-bold text-white">${u.username}</div>
                                     <div class="text-[10px] text-gray-500">ID: ${u.id.substring(0,8)}...</div>
@@ -469,7 +470,7 @@
             closeModal('execModal'); loadData();
         }
 
-        async function deleteItem(type, id) { if(confirm('Delete?')) { await fetch(`/api/${type}/${id}`, { method: 'DELETE' }); loadData(); } }
+        async function deleteItem(type, id) { if(confirm('Delete?')) { await fetch(`https://roblox-script-4dl2.onrender.com/api/${type}/${id}`, { method: 'DELETE' }); loadData(); } }
 
         function openModal(id) { 
             document.getElementById(id).classList.remove('hidden'); 
