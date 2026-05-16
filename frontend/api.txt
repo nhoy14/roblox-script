@@ -1,0 +1,2 @@
+ppass XT5BMnIBofalAlib
+mongodb+srv://script_db_user:XT5BMnIBofalAlib@cluster0.7fquooc.mongodb.net/?appName=Cluster0/

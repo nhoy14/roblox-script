@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DELTA // Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+        :root { --primary: #3b82f6; --secondary: #2563eb; --bg-dark: #050505; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); background-image: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15), transparent 30%), radial-gradient(circle at 100% 100%, rgba(37, 99, 235, 0.15), transparent 30%); color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        .glass-panel { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-sidebar { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-nav-mobile { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        h1, h2, h3, .brand-font { font-family: 'Space Grotesk', sans-serif; }
+        .glass-input { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); outline: none; }
+        .nav-btn.active { color: #fff; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .nav-btn-mobile.active { color: var(--primary); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide { animation: slideIn 0.3s ease-out; }
+        select.glass-input option { background-color: #0f172a; color: white; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col md:flex-row">
+
+    <aside class="w-64 glass-sidebar hidden md:flex flex-col z-30 h-full">
+        <div class="p-8 flex items-center gap-3">
+            <div class="text-2xl font-bold brand-font tracking-tight"><a href="/frontend/index.html">DELTA</a><span class="text-blue-500">.</span></div>
+            <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">ADMIN</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-3">
+            <button onclick="switchView('scripts')" id="d-btn-scripts" class="nav-btn active w-full flex items-center gap-4 px-4 py-3 rounded-xl transition text-gray-400 hover:text-white">
+                <i class="fa-solid fa-code"></i> <span class="font-medium">Scripts</span>
+            </button>
+            <button onclick="switchView('executors')" id="d-btn-executors" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition text-gray-400 hover:text-white">
+                <i class="fa-solid fa-microchip"></i> <span class="font-medium">Executors</span>
+            </button>
+            <button onclick="switchView('users')" id="d-btn-users" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition text-gray-400 hover:text-white">
+                <i class="fa-solid fa-users"></i> <span class="font-medium">Users</span>
+            </button>
+        </nav>
+        <div class="p-4">
+            <a href="/" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="font-medium">Exit Panel</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full relative">
+        <header class="h-16 md:h-20 flex items-center justify-between px-6 z-20 border-b border-white/5 bg-[#000000]/80 backdrop-blur-md">
+            <h2 class="text-xl md:text-2xl font-bold text-white brand-font" id="pageTitle">Script Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <a href="/profile.html" id="adminHeaderAvatar" class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-lg cursor-pointer hover:opacity-80 transition hover:shadow-blue-500/50">
+                    A
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 z-10 custom-scroll">
+            <div id="view-scripts" class="animate-slide space-y-6">
+                <div class="glass-panel p-5 rounded-2xl flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                    <div><p class="text-gray-400 text-xs uppercase font-bold">Total Scripts</p><h1 class="text-3xl font-bold text-white brand-font mt-1" id="totalScripts">0</h1></div>
+                    <button onclick="openModal('scriptModal')" class="w-12 h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg flex items-center justify-center text-xl transition"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div class="space-y-3" id="scriptListContainer"></div>
+            </div>
+
+            <div id="view-executors" class="hidden animate-slide space-y-6">
+                <div class="glass-panel p-5 rounded-2xl flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                    <div><p class="text-gray-400 text-xs uppercase font-bold">Executors</p><h1 class="text-3xl font-bold text-white brand-font mt-1" id="totalExecs">0</h1></div>
+                    <button onclick="openModal('execModal')" class="w-12 h-12 rounded-xl bg-blue-700 hover:bg-blue-600 text-white shadow-lg flex items-center justify-center text-xl transition"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div class="space-y-3" id="execListContainer"></div>
+            </div>
+
+            <div id="view-users" class="hidden animate-slide space-y-6">
+                <div class="glass-panel p-5 rounded-2xl flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                    <div><p class="text-gray-400 text-xs uppercase font-bold">Total Users</p><h1 class="text-3xl font-bold text-white brand-font mt-1" id="totalUsers">0</h1></div>
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 bg-white/5">
+                                <th class="p-4 text-xs uppercase font-bold text-gray-400 tracking-wider">User</th>
+                                <th class="p-4 text-xs uppercase font-bold text-gray-400 tracking-wider">Role</th>
+                                <th class="p-4 text-xs uppercase font-bold text-gray-400 tracking-wider">Password</th>
+                                <th class="p-4 text-xs uppercase font-bold text-gray-400 tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userListContainer" class="divide-y divide-white/5">
+                            <!-- Users will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="md:hidden glass-nav-mobile fixed bottom-0 w-full z-40 pb-safe">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="switchView('scripts')" id="m-btn-scripts" class="nav-btn-mobile active flex flex-col items-center justify-center w-full h-full text-gray-500"><i class="fa-solid fa-code text-xl mb-1"></i><span class="text-[10px]">Scripts</span></button>
+            <button onclick="switchView('executors')" id="m-btn-executors" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-500"><i class="fa-solid fa-microchip text-xl mb-1"></i><span class="text-[10px]">Executors</span></button>
+            <button onclick="switchView('users')" id="m-btn-users" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-500"><i class="fa-solid fa-users text-xl mb-1"></i><span class="text-[10px]">Users</span></button>
+            <a href="/" class="flex flex-col items-center justify-center w-full h-full text-gray-500"><i class="fa-solid fa-arrow-right-from-bracket text-xl mb-1"></i><span class="text-[10px]">Exit</span></a>
+        </div>
+    </nav>
+
+    <div id="scriptModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="glass-panel w-full md:max-w-lg rounded-t-2xl md:rounded-2xl shadow-2xl p-6 animate-slide max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Manage Script</h3>
+                <button onclick="closeModal('scriptModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <form onsubmit="saveScript(event)" class="space-y-4">
+                <input type="hidden" id="scriptId">
+                <input type="text" id="sTitle" oninput="updateLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Script Title" required>
+                
+                <div class="flex items-center gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-400 mb-1 ml-1">Thumbnail</label>
+                        <input type="file" id="sFile" class="hidden" onchange="uploadImage('s')">
+                        <button type="button" onclick="document.getElementById('sFile').click()" class="w-full glass-input rounded-xl p-3 text-sm text-gray-400 text-left hover:bg-white/5 transition flex items-center justify-between">
+                            <span>Choose Image...</span>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </button>
+                    </div>
+                    <img id="sPreview" src="https://via.placeholder.com/60" class="w-12 h-12 rounded-lg bg-black object-cover border border-white/10 hidden">
+                    <input type="hidden" id="sImage" required>
+                </div>
+
+                <div class="flex gap-3">
+                    <input type="text" id="sAuthor" oninput="updateLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Account Owner">
+                    
+                    <select id="sBadge" onchange="updateLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm">
+                        <option value="No Key">No Key</option>
+                        <option value="Key">Key</option>
+                    </select>
+                </div>
+
+                <textarea id="sCode" class="glass-input w-full rounded-xl p-4 text-sm h-32 font-mono" placeholder="loadstring(...)"></textarea>
+                
+                <div class="glass-panel p-3 rounded-xl border border-white/10 bg-white/5">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-2 tracking-widest">Live Card Preview</p>
+                    <div class="flex items-center gap-3">
+                        <img id="liveImg" src="https://via.placeholder.com/60" class="w-12 h-12 rounded-lg object-cover bg-black border border-white/10">
+                        <div class="flex-1 min-w-0">
+                            <h4 id="liveTitle" class="text-white font-bold text-sm truncate">Script Title</h4>
+                            <p class="text-xs text-gray-400 truncate">
+                                <i class="fa-solid fa-user text-[10px]"></i> <span id="liveAuthor">Owner</span> • 
+                                <span id="liveBadge" class="text-green-400 font-bold text-[10px] border border-green-500/30 bg-green-500/10 px-1 rounded">No Key</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="sSubmitBtn" class="w-full bg-blue-600 py-4 rounded-xl text-white font-bold shadow-lg hover:bg-blue-500 transition">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="execModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="glass-panel w-full md:max-w-lg rounded-t-2xl md:rounded-2xl shadow-2xl p-6 animate-slide">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Manage Executor</h3>
+                <button onclick="closeModal('execModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveExecutor(event)" class="space-y-4">
+                <input type="hidden" id="execId">
+                
+                <div class="flex gap-3">
+                    <input type="text" id="eTitle" oninput="updateExecLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Executor Name" required>
+                    <input type="text" id="eTag" oninput="updateExecLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Tag (e.g. iOS)" required>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-400 mb-1 ml-1">Icon</label>
+                        <input type="file" id="eFile" class="hidden" onchange="uploadImage('e')">
+                        <button type="button" onclick="document.getElementById('eFile').click()" class="w-full glass-input rounded-xl p-3 text-sm text-gray-400 text-left hover:bg-white/5 transition flex items-center justify-between">
+                            <span>Choose Icon...</span>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="eImage">
+                    <img id="ePreviewHidden" class="hidden"> 
+                </div>
+                
+                <div class="flex gap-3">
+                    <select id="eStatus" onchange="updateExecLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm">
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                    <input type="text" id="ePlatform" oninput="updateExecLivePreview()" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Platform (e.g. Roblox)">
+                </div>
+
+                <input type="text" id="eDownload" class="glass-input w-full rounded-xl p-4 text-sm" placeholder="Download Link">
+                
+                <div class="glass-panel p-3 rounded-xl border border-white/10 bg-white/5">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-2 tracking-widest">Live Card Preview</p>
+                    <div id="execLiveCard" class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden transition border border-white/5">
+                        <div id="liveExecStatusColor" class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                        
+                        <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-2xl text-gray-300 overflow-hidden relative">
+                             <img id="liveExecImg" src="https://via.placeholder.com/60" class="w-full h-full object-cover hidden absolute inset-0">
+                             <i id="liveExecIconPlaceholder" class="fa-solid fa-microchip"></i>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-bold flex items-center gap-2">
+                                <span id="liveExecTitle">Delta</span> 
+                                <span id="liveExecTag" class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-normal">iOS</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 truncate"><span id="liveExecPlatform">Roblox</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="eSubmitBtn" class="w-full bg-blue-700 py-4 rounded-xl text-white font-bold shadow-lg">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL LOCK VARIABLE ---
+        let isProcessing = false;
+
+        // --- SCRIPT LIVE PREVIEW ---
+        function updateLivePreview() {
+            const title = document.getElementById('sTitle').value || "Script Title";
+            const author = document.getElementById('sAuthor').value || "Owner";
+            const badge = document.getElementById('sBadge').value;
+            const imgUrl = document.getElementById('sImage').value;
+
+            document.getElementById('liveTitle').innerText = title;
+            document.getElementById('liveAuthor').innerText = author;
+            document.getElementById('liveBadge').innerText = badge;
+
+            const badgeEl = document.getElementById('liveBadge');
+            if(badge === 'No Key') {
+                badgeEl.className = "text-green-400 font-bold text-[10px] border border-green-500/30 bg-green-500/10 px-1 rounded";
+            } else {
+                badgeEl.className = "text-red-400 font-bold text-[10px] border border-red-500/30 bg-red-500/10 px-1 rounded";
+            }
+
+            if(imgUrl) document.getElementById('liveImg').src = imgUrl;
+        }
+
+        // --- EXECUTOR LIVE PREVIEW (NEW) ---
+        function updateExecLivePreview() {
+            const title = document.getElementById('eTitle').value || 'Executor Name';
+            const tag = document.getElementById('eTag').value || 'Tag';
+            const platform = document.getElementById('ePlatform').value || 'Platform';
+            const status = document.getElementById('eStatus').value;
+            const imgUrl = document.getElementById('eImage').value;
+
+            document.getElementById('liveExecTitle').innerText = title;
+            document.getElementById('liveExecTag').innerText = tag;
+            document.getElementById('liveExecPlatform').innerText = platform;
+
+            const card = document.getElementById('execLiveCard');
+            const statusColor = document.getElementById('liveExecStatusColor');
+            
+            // Handle Status Visuals
+            if (status === 'Online') {
+                statusColor.className = "absolute left-0 top-0 bottom-0 w-1 bg-green-500";
+                card.style.borderColor = "rgba(34, 197, 94, 0.3)";
+                card.style.boxShadow = "0 0 10px rgba(34, 197, 94, 0.1)";
+            } else {
+                statusColor.className = "absolute left-0 top-0 bottom-0 w-1 bg-red-500";
+                card.style.borderColor = "rgba(239, 68, 68, 0.3)";
+                card.style.boxShadow = "0 0 10px rgba(239, 68, 68, 0.1)";
+            }
+
+            // Handle Image
+            const imgEl = document.getElementById('liveExecImg');
+            const iconEl = document.getElementById('liveExecIconPlaceholder');
+            
+            if (imgUrl) {
+                imgEl.src = imgUrl;
+                imgEl.classList.remove('hidden');
+                iconEl.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                iconEl.classList.remove('hidden');
+            }
+        }
+
+        // --- UPLOAD LOGIC ---
+        async function uploadImage(prefix) {
+            const fileInput = document.getElementById(prefix + 'File');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            const btn = document.getElementById(prefix + 'SubmitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "Uploading...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.url) {
+                    document.getElementById(prefix + 'Image').value = data.url;
+                    
+                    // Update previews based on prefix
+                    if(prefix === 's') {
+                        document.getElementById('sPreview').src = data.url;
+                        document.getElementById('sPreview').classList.remove('hidden');
+                        updateLivePreview();
+                    } else if (prefix === 'e') {
+                        updateExecLivePreview();
+                    }
+                }
+            } catch (err) { alert('Error uploading image'); } 
+            finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        // --- VIEW SWITCHING ---
+        function switchView(view) {
+            document.getElementById('view-scripts').classList.add('hidden');
+            document.getElementById('view-executors').classList.add('hidden');
+            document.getElementById('view-users').classList.add('hidden');
+            document.querySelectorAll('.nav-btn, .nav-btn-mobile').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + view).classList.remove('hidden');
+            document.getElementById('d-btn-' + view).classList.add('active');
+            document.getElementById('m-btn-' + view).classList.add('active');
+            
+            if (view === 'scripts') document.getElementById('pageTitle').innerText = 'Script Dashboard';
+            else if (view === 'executors') document.getElementById('pageTitle').innerText = 'Executor Status';
+            else if (view === 'users') document.getElementById('pageTitle').innerText = 'User Management';
+        }
+
+        // --- DATA LOADING ---
+        let scripts = [], executors = [], users = [];
+        async function loadData() {
+            try {
+                const [sRes, eRes, uRes] = await Promise.all([
+                    fetch('/api/scripts'), 
+                    fetch('/api/executors'),
+                    fetch('/api/users/all')
+                ]);
+                scripts = await sRes.json();
+                executors = await eRes.json();
+                users = await uRes.json();
+                renderScripts(); 
+                renderExecutors();
+                renderUsers();
+            } catch (e) { console.error("API Error", e); }
+        }
+
+        function renderScripts() {
+            const container = document.getElementById('scriptListContainer');
+            container.innerHTML = '';
+            document.getElementById('totalScripts').innerText = scripts.length;
+            scripts.forEach(s => {
+                const badgeColor = s.badge === 'Key' ? 'text-red-400 border-red-500/30 bg-red-500/10' : 'text-green-400 border-green-500/30 bg-green-500/10';
+                container.innerHTML += `
+                    <div class="glass-panel p-4 rounded-xl flex items-center gap-4 transition hover:bg-white/5">
+                        <img src="${s.image}" class="w-12 h-12 rounded-lg object-cover bg-white/10" onerror="this.src='https://via.placeholder.com/60'">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-bold truncate">${s.title}</h4>
+                            <p class="text-xs text-gray-400 truncate">${s.author} • <span class="${badgeColor} px-1 rounded border text-[10px]">${s.badge}</span></p>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editScript(${s.id})" class="w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteItem('scripts', ${s.id})" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderExecutors() {
+            const container = document.getElementById('execListContainer');
+            container.innerHTML = '';
+            document.getElementById('totalExecs').innerText = executors.length;
+            executors.forEach(e => {
+                const isOnline = e.status === 'Online';
+                container.innerHTML += `
+                    <div class="glass-panel p-4 rounded-xl flex items-center gap-4 transition hover:bg-white/5 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}"></div>
+                        <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-2xl text-gray-300 relative overflow-hidden">${e.image ? `<img src="${e.image}" class="w-full h-full object-cover rounded-lg absolute inset-0">` : '<i class="fa-solid fa-microchip"></i>'}</div>
+                        <div class="flex-1 min-w-0"><h4 class="text-white font-bold flex items-center gap-2">${e.title} <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-normal">${e.tag}</span></h4><p class="text-xs text-gray-400 truncate">${e.platform}</p></div>
+                        <div class="flex gap-1"><button onclick="editExecutor('${e.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('executors', '${e.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>
+                    </div>`;
+            });
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('userListContainer');
+            container.innerHTML = '';
+            
+            // Only render if users is an array
+            if (Array.isArray(users)) {
+                document.getElementById('totalUsers').innerText = users.length;
+                users.forEach(u => {
+                    container.innerHTML += `
+                        <tr class="hover:bg-white/5 transition group">
+                            <td class="p-4 flex items-center gap-3">
+                                <img src="${u.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed='+u.username}" class="w-10 h-10 rounded-full bg-black/50 border border-white/10">
+                                <div>
+                                    <div class="font-bold text-white">${u.username}</div>
+                                    <div class="text-[10px] text-gray-500">ID: ${u.id.substring(0,8)}...</div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="text-[10px] uppercase font-bold px-2 py-1 rounded border ${u.role === 'admin' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-white/5 border-white/10 text-gray-400'}">
+                                    ${u.role}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-300 font-mono bg-black/30 px-2 py-1 rounded border border-white/5 blur-sm hover:blur-none transition-all cursor-pointer select-all">${u.password}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-right">
+                                <button onclick="deleteItem('users', '${u.id}')" class="w-8 h-8 rounded-lg bg-white/5 text-red-400 hover:bg-red-500/20 inline-flex items-center justify-center transition opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                document.getElementById('totalUsers').innerText = "0";
+                container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-400">Error loading users or unauthorized access.</td></tr>`;
+            }
+        }
+
+        async function saveScript(e) {
+            e.preventDefault();
+            if (isProcessing) return;
+            const btn = document.getElementById('sSubmitBtn');
+            const originalText = btn.innerText;
+            isProcessing = true; btn.disabled = true; btn.innerText = "Please wait..."; btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const id = document.getElementById('scriptId').value;
+            const data = { 
+                title: document.getElementById('sTitle').value, 
+                image: document.getElementById('sImage').value, 
+                author: document.getElementById('sAuthor').value, 
+                badge: document.getElementById('sBadge').value, 
+                code: document.getElementById('sCode').value 
+            };
+
+            try {
+                await fetch(id ? `/api/scripts/${id}` : '/api/scripts', { method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+                closeModal('scriptModal'); loadData();
+                setTimeout(() => { isProcessing = false; btn.disabled = false; btn.innerText = originalText; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }, 3000);
+            } catch (error) { console.error(error); isProcessing = false; btn.disabled = false; btn.innerText = originalText; btn.classList.remove('opacity-50', 'cursor-not-allowed'); alert("Error saving script."); }
+        }
+
+        async function saveExecutor(e) {
+            e.preventDefault();
+            const id = document.getElementById('execId').value;
+            const data = { 
+                title: document.getElementById('eTitle').value, 
+                tag: document.getElementById('eTag').value, 
+                image: document.getElementById('eImage').value, 
+                status: document.getElementById('eStatus').value, 
+                platform: document.getElementById('ePlatform').value, 
+                download_url: document.getElementById('eDownload').value 
+            };
+            await fetch(id ? `/api/executors/${id}` : '/api/executors', { method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            closeModal('execModal'); loadData();
+        }
+
+        async function deleteItem(type, id) { if(confirm('Delete?')) { await fetch(`/api/${type}/${id}`, { method: 'DELETE' }); loadData(); } }
+
+        function openModal(id) { 
+            document.getElementById(id).classList.remove('hidden'); 
+            if(id.includes('script') && !document.getElementById('scriptId').value) { 
+                document.querySelector('#scriptModal form').reset(); 
+                document.getElementById('sPreview').classList.add('hidden');
+                updateLivePreview(); 
+            } 
+            if(id.includes('exec') && !document.getElementById('execId').value) { 
+                document.querySelector('#execModal form').reset(); 
+                // Reset Preview when opening fresh
+                updateExecLivePreview();
+            } 
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id.includes('script')?'scriptId':'execId').value = ""; }
+        
+        function editScript(id) { 
+            const s = scripts.find(x => x.id === id); 
+            document.getElementById('scriptId').value = s.id; 
+            document.getElementById('sTitle').value = s.title; 
+            document.getElementById('sImage').value = s.image; 
+            document.getElementById('sAuthor').value = s.author; 
+            document.getElementById('sBadge').value = s.badge || "No Key"; 
+            document.getElementById('sCode').value = s.code; 
+            if(s.image) { 
+                document.getElementById('sPreview').src = s.image; 
+                document.getElementById('sPreview').classList.remove('hidden'); 
+            }
+            updateLivePreview(); 
+            document.getElementById('scriptModal').classList.remove('hidden'); 
+        }
+
+        function editExecutor(id) { 
+            const e = executors.find(x => x.id === id); 
+            document.getElementById('execId').value = e.id; 
+            document.getElementById('eTitle').value = e.title; 
+            document.getElementById('eTag').value = e.tag; 
+            document.getElementById('eImage').value = e.image || ''; 
+            document.getElementById('eStatus').value = e.status; 
+            document.getElementById('ePlatform').value = e.platform; 
+            document.getElementById('eDownload').value = e.download_url; 
+            
+            // Trigger Live Preview Update
+            updateExecLivePreview();
+
+            document.getElementById('execModal').classList.remove('hidden'); 
+        }
+
+        // Check Auth and set Avatar
+        const currentUser = JSON.parse(localStorage.getItem('delta_user'));
+        if (currentUser) {
+            const avatarEl = document.getElementById('adminHeaderAvatar');
+            if (currentUser.avatar) {
+                avatarEl.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full rounded-full object-cover">`;
+                avatarEl.classList.remove('bg-gradient-to-tr', 'from-blue-500', 'to-blue-600');
+            } else {
+                avatarEl.innerText = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

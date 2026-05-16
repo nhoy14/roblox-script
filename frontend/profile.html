@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELTA // User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+        
+        :root { 
+            --primary: #3b82f6; 
+            --secondary: #2563eb; 
+            --bg-dark: #050505; 
+            --glass: rgba(10, 10, 10, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: #f8fafc; 
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Premium Animated Background */
+        .bg-grid { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); 
+            background-size: 40px 40px; z-index: -2; 
+        }
+        
+        .blob-bg {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: -1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(59, 130, 246, 0.25); }
+        .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: rgba(37, 99, 235, 0.2); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 50%; width: 400px; height: 400px; background: rgba(236, 72, 153, 0.15); animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 40px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .brand-font { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Glassmorphism Classes */
+        .glass-card { 
+            background: var(--glass); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        /* Avatar Ring Animation */
+        .avatar-ring {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), #ec4899);
+            z-index: -1;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Fancy Button */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        .btn-gradient:hover::before { opacity: 1; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
+
+        /* Stat Card Hover */
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="blob-bg blob-1"></div>
+    <div class="blob-bg blob-2"></div>
+    <div class="blob-bg blob-3"></div>
+    
+    <header class="fixed top-0 left-0 right-0 h-20 px-6 md:px-10 flex items-center justify-between z-50 glass-card border-x-0 border-t-0 border-b border-white/10 rounded-none shadow-none">
+        <a href="/" class="text-2xl font-bold brand-font text-white hover:opacity-80 transition">DELTA<span class="text-blue-500">.</span></a>
+        <div class="flex gap-4 items-center">
+            <a href="/" class="text-gray-400 hover:text-white font-medium text-sm transition hidden sm:block"><i class="fa-solid fa-compass mr-1"></i> Discover</a>
+            <div class="h-6 w-px bg-white/10 hidden sm:block"></div>
+            <button onclick="logout()" class="px-5 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white font-bold text-sm transition shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                <i class="fa-solid fa-power-off mr-1"></i> Log Out
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl mx-auto w-full px-4 pt-32 pb-20 relative z-10 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Sidebar: User Identity -->
+        <aside class="lg:w-1/3 flex flex-col gap-6">
+            
+            <!-- Profile Main Card -->
+            <div class="glass-card p-8 rounded-3xl text-center relative overflow-hidden group">
+                <!-- Top Cover Background -->
+                <div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-blue-600/40 to-blue-700/40 opacity-50 z-0"></div>
+                
+                <div class="relative z-10 flex flex-col items-center mt-8">
+                    <div class="relative mb-6">
+                        <div class="avatar-ring"></div>
+                        <img id="profileAvatar" src="https://via.placeholder.com/150" class="w-32 h-32 rounded-full border-4 border-[#0f172a] object-cover bg-black relative z-10 shadow-xl">
+                        
+                        <div class="absolute -bottom-2 -right-2 bg-[#000000] rounded-full p-1 z-20">
+                            <div class="w-6 h-6 rounded-full bg-green-500 border-2 border-[#0f172a]"></div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-3xl font-bold brand-font mb-1 text-white" id="profileName">User</h1>
+                    <p class="text-gray-400 text-sm mb-4"><i class="fa-solid fa-at text-xs"></i><span id="profileUsernameDisplay" class="ml-1">username</span></p>
+
+                    <div class="flex flex-wrap justify-center gap-2 mb-6">
+                        <span id="profileRole" class="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full font-bold text-[10px] uppercase tracking-wider shadow-[0_0_10px_rgba(139,92,246,0.2)]">USER</span>
+                        <span class="px-3 py-1 bg-white/5 text-gray-300 border border-white/10 rounded-full text-[10px] uppercase tracking-wider"><i class="fa-solid fa-calendar-alt mr-1"></i> <span id="profileDate">Date</span></span>
+                    </div>
+
+                    <div class="w-full flex flex-col gap-3">
+                        <a href="/admin.html" id="adminPanelBtn" style="display: none;" class="w-full py-3 bg-gradient-to-r from-blue-700 to-blue-600 rounded-xl text-white font-bold text-sm shadow-lg hover:shadow-blue-600/25 transition">
+                            <i class="fa-solid fa-lock mr-2"></i> Admin Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Quick Actions -->
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="text-white font-bold brand-font mb-4 text-lg">Settings</h3>
+                <div class="space-y-2">
+                    <button onclick="openEditProfileModal()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition flex justify-between items-center group">
+                        <span><i class="fa-solid fa-user-pen w-6 text-center text-gray-500 group-hover:text-blue-400 transition"></i> Edit Profile</span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                    </button>
+                    <button onclick="alert('You have no new notifications.')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition flex justify-between items-center group">
+                        <span><i class="fa-solid fa-bell w-6 text-center text-gray-500 group-hover:text-blue-500 transition"></i> Notifications</span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                    </button>
+                    <button onclick="alert('Your account is secured with standard encryption.')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition flex justify-between items-center group">
+                        <span><i class="fa-solid fa-shield-halved w-6 text-center text-gray-500 group-hover:text-green-400 transition"></i> Security</span>
+                        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Right Content: Dashboard -->
+        <div class="lg:w-2/3 flex flex-col gap-6">
+            
+            <!-- Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-3xl stat-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-code text-6xl"></i></div>
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Scripts</h3>
+                    <p class="text-4xl font-bold brand-font text-white" id="statTotalScripts">0</p>
+                </div>
+                <div class="glass-card p-6 rounded-3xl stat-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-play text-6xl"></i></div>
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Executions</h3>
+                    <p class="text-4xl font-bold brand-font text-white" id="statExecutions">0</p>
+                </div>
+                <div class="glass-card p-6 rounded-3xl stat-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-star text-6xl text-yellow-500"></i></div>
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Reputation</h3>
+                    <p class="text-4xl font-bold brand-font text-white">New</p>
+                </div>
+            </div>
+
+            <!-- Action Area -->
+            <div class="glass-card p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 border-blue-500/30 shadow-[0_0_30px_rgba(139,92,246,0.1)]">
+                <div>
+                    <h2 class="text-2xl font-bold brand-font text-white mb-2">Publish a Script</h2>
+                    <p class="text-gray-400 text-sm max-w-md">Share your latest creation with the community. Scripts are reviewed automatically before going live.</p>
+                </div>
+                <button onclick="openPostModal()" class="w-full md:w-auto px-8 py-4 btn-gradient rounded-xl text-white font-bold text-lg whitespace-nowrap">
+                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Upload Script
+                </button>
+            </div>
+
+            <!-- Recent Activity Placeholder -->
+            <div class="glass-card p-8 rounded-3xl flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold brand-font text-white">My Scripts</h2>
+                    <button class="text-sm text-blue-400 hover:text-blue-300 font-medium">View All</button>
+                </div>
+                
+                <div id="myScriptsContainer" class="flex flex-col gap-4">
+                    <div class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/5">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-500 mb-4">
+                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">No scripts yet</h3>
+                        <p class="text-gray-400 text-sm mb-4">You haven't published any scripts to the platform.</p>
+                        <button onclick="openPostModal()" class="text-primary hover:text-blue-400 font-semibold text-sm">Post your first script &rarr;</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Premium Post Script Modal -->
+    <div id="postModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[100] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 relative flex flex-col max-h-[90vh]" id="postModalContent">
+            
+            <!-- Modal Header -->
+            <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                <div>
+                    <h3 class="text-2xl font-bold text-white brand-font">Publish Script</h3>
+                    <p class="text-xs text-gray-400 mt-1">Fill out the details below to share your script.</p>
+                </div>
+                <button onclick="closePostModal()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 flex items-center justify-center transition border border-transparent hover:border-red-500/30">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-8 overflow-y-auto custom-scroll flex-1">
+                <form onsubmit="submitScript(event)" class="space-y-6">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Script Title</label>
+                        <input type="text" id="pTitle" class="w-full glass-input rounded-xl p-4 text-white text-lg placeholder-gray-600" placeholder="e.g. Blox Fruits Auto Farm" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Thumbnail</label>
+                            <input type="file" id="pFile" class="hidden" onchange="uploadImage()">
+                            <button type="button" onclick="document.getElementById('pFile').click()" class="w-full glass-input rounded-xl p-4 text-left hover:bg-white/5 transition flex items-center justify-between group">
+                                <span id="pFileName" class="text-gray-400 group-hover:text-white transition truncate pr-4">Choose Image...</span>
+                                <i class="fa-solid fa-image text-blue-400"></i>
+                            </button>
+                            <input type="hidden" id="pImage">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Access Type</label>
+                            <div class="relative">
+                                <select id="pBadge" class="w-full glass-input rounded-xl p-4 text-white appearance-none cursor-pointer">
+                                    <option value="No Key" class="bg-[#000000] text-white">No Key Required</option>
+                                    <option value="Key" class="bg-[#000000] text-white">Key System</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Lua Source Code</label>
+                        <div class="relative rounded-xl overflow-hidden border border-white/10 focus-within:border-primary focus-within:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all">
+                            <div class="bg-black/50 px-4 py-2 border-b border-white/5 flex gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                            </div>
+                            <textarea id="pCode" class="w-full bg-black/40 p-4 text-green-400 font-mono text-sm h-48 outline-none resize-y placeholder-green-800/50 leading-relaxed custom-scroll" placeholder="-- Paste your script here&#10;loadstring(game:HttpGet('...'))()" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal Footer (Sticky visually) -->
+                    <div class="pt-4 mt-2">
+                        <button type="submit" id="pSubmitBtn" class="w-full btn-gradient py-4 rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Publish to Platform
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[100] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 relative flex flex-col" id="editProfileModalContent">
+            <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                <div>
+                    <h3 class="text-2xl font-bold text-white brand-font">Edit Profile</h3>
+                </div>
+                <button onclick="closeEditProfileModal()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 flex items-center justify-center transition border border-transparent hover:border-red-500/30">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-8">
+                <form onsubmit="submitEditProfile(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Avatar / Profile Picture</label>
+                        <input type="file" id="eAvatarFile" class="hidden" onchange="uploadAvatar()">
+                        <button type="button" onclick="document.getElementById('eAvatarFile').click()" class="w-full glass-input rounded-xl p-4 text-left hover:bg-white/5 transition flex items-center justify-between group">
+                            <span id="eAvatarFileName" class="text-gray-400 group-hover:text-white transition truncate pr-4">Upload new avatar...</span>
+                            <i class="fa-solid fa-image text-blue-400"></i>
+                        </button>
+                        <input type="hidden" id="eAvatarUrl">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">New Password (Optional)</label>
+                        <input type="password" id="ePassword" class="w-full glass-input rounded-xl p-4 text-white text-lg placeholder-gray-600" placeholder="Leave blank to keep same">
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" id="eSubmitBtn" class="w-full btn-gradient py-4 rounded-xl text-white font-bold text-lg shadow-lg">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check Auth
+        const user = JSON.parse(localStorage.getItem('delta_user'));
+        if(!user) {
+            window.location.href = '/login.html';
+        } else {
+            // Populate Identity
+            document.getElementById('profileName').innerText = user.username;
+            document.getElementById('profileUsernameDisplay').innerText = user.username.toLowerCase().replace(/\s+/g, '');
+            if(user.avatar) document.getElementById('profileAvatar').src = user.avatar;
+            document.getElementById('profileRole').innerText = user.role.toUpperCase();
+            
+            // Admin Styling
+            if(user.role === 'admin') {
+                document.getElementById('adminPanelBtn').style.display = 'inline-flex';
+                const roleBadge = document.getElementById('profileRole');
+                roleBadge.className = "px-3 py-1 bg-blue-600/20 text-blue-500 border border-blue-600/30 rounded-full font-bold text-[10px] uppercase tracking-wider shadow-[0_0_10px_rgba(6,182,212,0.2)]";
+            }
+            
+            if(user.created_at) {
+                const d = new Date(user.created_at);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('profileDate').innerText = d.toLocaleDateString(undefined, options);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('delta_user');
+            window.location.href = '/login.html';
+        }
+
+        // Modal Logic with Animation
+        const modal = document.getElementById('postModal');
+        const modalContent = document.getElementById('postModalContent');
+
+        function openPostModal() {
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closePostModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // Wait for transition
+        }
+
+        // --- Edit Profile Logic ---
+        const editModal = document.getElementById('editProfileModal');
+        const editModalContent = document.getElementById('editProfileModalContent');
+
+        function openEditProfileModal() {
+            editModal.classList.remove('hidden');
+            void editModal.offsetWidth;
+            editModal.classList.remove('opacity-0', 'pointer-events-none');
+            editModalContent.classList.remove('scale-95');
+        }
+
+        function closeEditProfileModal() {
+            editModal.classList.add('opacity-0', 'pointer-events-none');
+            editModalContent.classList.add('scale-95');
+            setTimeout(() => { editModal.classList.add('hidden'); }, 300);
+        }
+
+        async function uploadAvatar() {
+            const fileInput = document.getElementById('eAvatarFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            const fileNameEl = document.getElementById('eAvatarFileName');
+            fileNameEl.innerText = "Uploading...";
+            fileNameEl.classList.add('text-primary');
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.url) {
+                    document.getElementById('eAvatarUrl').value = data.url;
+                    fileNameEl.innerText = file.name;
+                    fileNameEl.classList.remove('text-primary');
+                    fileNameEl.classList.add('text-green-400');
+                }
+            } catch (err) { alert('Error uploading avatar'); } 
+        }
+
+        async function submitEditProfile(e) {
+            e.preventDefault();
+            const btn = document.getElementById('eSubmitBtn');
+            const origTxt = btn.innerText;
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+
+            const data = {};
+            const newAvatar = document.getElementById('eAvatarUrl').value;
+            const newPass = document.getElementById('ePassword').value;
+
+            if (newAvatar) data.avatar = newAvatar;
+            if (newPass) data.password = newPass;
+
+            try {
+                const res = await fetch('/api/users/' + user.id, { 
+                    method: 'PUT', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(data) 
+                });
+                
+                if(res.ok) {
+                    // Update local storage and UI
+                    if(newAvatar) user.avatar = newAvatar;
+                    localStorage.setItem('delta_user', JSON.stringify(user));
+                    
+                    if(newAvatar) document.getElementById('profileAvatar').src = newAvatar;
+                    
+                    closeEditProfileModal();
+                    document.getElementById('ePassword').value = '';
+                    alert('Profile updated successfully!');
+                } else {
+                    alert('Failed to update profile.');
+                }
+            } catch (err) {
+                alert("Network error.");
+            } finally {
+                btn.innerText = origTxt;
+                btn.disabled = false;
+            }
+        }
+
+        // Image Upload
+        async function uploadImage() {
+            const fileInput = document.getElementById('pFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            const fileNameEl = document.getElementById('pFileName');
+            fileNameEl.innerText = "Uploading...";
+            fileNameEl.classList.add('text-primary');
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.url) {
+                    document.getElementById('pImage').value = data.url;
+                    fileNameEl.innerText = file.name;
+                    fileNameEl.classList.remove('text-primary');
+                    fileNameEl.classList.add('text-green-400');
+                }
+            } catch (err) { 
+                alert('Error uploading image'); 
+                fileNameEl.innerText = "Choose Image..."; 
+                fileNameEl.classList.remove('text-primary');
+            } 
+        }
+
+        // Submit Form
+        async function submitScript(e) {
+            e.preventDefault();
+            const btn = document.getElementById('pSubmitBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+            btn.disabled = true;
+
+            const data = { 
+                title: document.getElementById('pTitle').value, 
+                image: document.getElementById('pImage').value || 'https://via.placeholder.com/300', 
+                author: user.username, 
+                badge: document.getElementById('pBadge').value, 
+                code: document.getElementById('pCode').value 
+            };
+
+            try {
+                const res = await fetch('/api/scripts', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(data) 
+                });
+                
+                if(res.ok) {
+                    closePostModal();
+                    document.querySelector('form').reset();
+                    const fileNameEl = document.getElementById('pFileName');
+                    fileNameEl.innerText = "Choose Image...";
+                    fileNameEl.className = "text-gray-400 group-hover:text-white transition truncate pr-4";
+                    
+                    // Show a nice success alert (browser default for now)
+                    setTimeout(() => {
+                        alert("Script published successfully to the DELTA network!");
+                        fetchMyScripts();
+                    }, 300);
+                } else {
+                    alert("Failed to post script.");
+                }
+            } catch (err) {
+                alert("Network error.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function fetchMyScripts() {
+            try {
+                const res = await fetch('/api/scripts');
+                const allScripts = await res.json();
+                const myScripts = allScripts.filter(s => s.author === user.username);
+                
+                const container = document.getElementById('myScriptsContainer');
+                
+                // Update stats
+                document.getElementById('statTotalScripts').innerText = myScripts.length;
+                const totalViews = myScripts.reduce((acc, curr) => acc + (curr.views || 0), 0);
+                document.getElementById('statExecutions').innerText = formatViews(totalViews);
+                
+                if (myScripts.length === 0) {
+                    container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/5">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-500 mb-4">
+                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">No scripts yet</h3>
+                        <p class="text-gray-400 text-sm mb-4">You haven't published any scripts to the platform.</p>
+                        <button onclick="openPostModal()" class="text-primary hover:text-blue-400 font-semibold text-sm">Post your first script &rarr;</button>
+                    </div>`;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                myScripts.forEach(s => {
+                    const timeAgo = calculateTimeAgo(s.timestamp);
+                    const views = formatViews(s.views);
+                    
+                    container.innerHTML += `
+                    <div class="bg-black/30 border border-white/5 rounded-2xl p-4 flex gap-4 hover:bg-black/40 transition">
+                        <img src="${s.image || 'https://via.placeholder.com/150'}" class="w-24 h-24 rounded-xl object-cover" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="flex-1 flex flex-col justify-between py-1">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="text-white font-bold text-lg leading-tight ${s.deleted ? 'opacity-50 line-through' : ''}">${s.title}</h4>
+                                    <div class="flex gap-2">
+                                        ${s.deleted ? '<span class="text-[10px] font-bold px-2 py-1 bg-red-500/20 border border-red-500/30 rounded-md text-red-400">DELETED</span>' : ''}
+                                        <span class="text-[10px] font-bold px-2 py-1 bg-white/10 rounded-md text-gray-300">${s.badge || 'No Key'}</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-500 text-xs"><i class="fa-solid fa-clock mr-1"></i> ${timeAgo}</p>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-gray-400 text-sm font-medium"><i class="fa-solid fa-eye text-blue-500 mr-1"></i> ${views} Views</span>
+                                <div class="flex gap-2">
+                                    <button onclick="copyScriptCode(\`${s.code.replace(/`/g, '\\\\`')}\`)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 flex items-center justify-center transition" title="Copy Script">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                    ${s.deleted ? 
+                                    `<button onclick="restoreScript('${s.id}')" class="w-8 h-8 rounded-full bg-white/5 hover:bg-green-500/20 text-gray-400 hover:text-green-400 flex items-center justify-center transition" title="Restore Script">
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </button>` : 
+                                    `<button onclick="softDeleteScript('${s.id}')" class="w-8 h-8 rounded-full bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 flex items-center justify-center transition" title="Delete Script">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } catch (err) {
+                console.error("Error fetching scripts:", err);
+            }
+        }
+
+        function calculateTimeAgo(dateStr) {
+            if (!dateStr) return "Just now";
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return "Recently"; 
+            const diff = Math.floor((new Date() - date) / 1000);
+            if (diff < 60) return "Just now";
+            if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+            if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+            return Math.floor(diff / 86400) + "d ago";
+        }
+
+        async function softDeleteScript(id) {
+            if(!confirm("Are you sure you want to delete this script?")) return;
+            try {
+                await fetch('/api/scripts/' + id, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ deleted: true })
+                });
+                fetchMyScripts();
+            } catch(e) { alert("Error deleting script"); }
+        }
+
+        async function restoreScript(id) {
+            try {
+                await fetch('/api/scripts/' + id, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ deleted: false })
+                });
+                fetchMyScripts();
+            } catch(e) { alert("Error restoring script"); }
+        }
+
+        function formatViews(num) {
+            if (!num) return 0;
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num;
+        }
+        
+        function copyScriptCode(code) {
+            navigator.clipboard.writeText(code);
+            alert('Script copied to clipboard!');
+        }
+
+        // Initialize fetching on page load if user is logged in
+        if (user) {
+            fetchMyScripts();
+        }
+    </script>
+</body>
+</html>

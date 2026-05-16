@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaHub - Ultimate Script Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'dark': '#0a0e27',
+                        'darker': '#060918',
+                        'card': '#151932',
+                        'neon-blue': '#00d9ff',
+                        'neon-pink': '#ff0080',
+                        'neon-purple': '#b829ff',
+                        'success': '#00ff9d'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #060918; }
+        ::-webkit-scrollbar-thumb { background: #151932; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2d3748; }
+
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(135deg, #151932, #1a1f3a);
+            padding: 1px;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-border:hover {
+            background: linear-gradient(135deg, #00d9ff, #b829ff);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+
+        .gradient-border-inner {
+            background: #151932;
+            border-radius: 0.9rem;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .glass-nav {
+            background: rgba(6, 9, 24, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #00d9ff, #b829ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim { animation: float 4s ease-in-out infinite; }
+        
+        /* Code Block Styling */
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background: #0d1120;
+            border: 1px solid #2d3748;
+        }
+    </style>
+</head>
+<body class="bg-darker text-gray-200 min-h-screen overflow-x-hidden selection:bg-neon-purple selection:text-white">
+
+    <!-- Background Ambient Glow -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-neon-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-neon-purple/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center shadow-lg shadow-neon-blue/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <span class="text-2xl font-bold tracking-tight text-white">Nexa<span class="text-neon-blue">Hub</span></span>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8 bg-card/50 px-6 py-2 rounded-full border border-white/5">
+                <a href="#" onclick="showPage('home')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-white">Home</a>
+                <a href="#" onclick="showPage('scripts')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Scripts</a>
+                <a href="#" onclick="showPage('executors')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Executors</a>
+                <a href="#" onclick="showPage('premium')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Premium</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-4">
+                <button onclick="showPage('settings')" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+                <button onclick="showPage('profile')" class="w-10 h-10 rounded-full bg-gray-800 border border-neon-purple overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-full h-full object-cover">
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="pt-32 pb-20 min-h-screen">
+
+        <!-- HOME PAGE -->
+        <section id="page-home" class="page-section max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2 space-y-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-sm font-medium animate-pulse">
+                        <span class="w-2 h-2 rounded-full bg-neon-blue"></span>
+                        v2.4.0 Now Available
+                    </div>
+                    <h1 class="text-6xl lg:text-7xl font-bold leading-tight">
+                        Dominate <br>
+                        <span class="text-gradient">Roblox Gaming</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg max-w-lg">
+                        Access a library of over 5,000+ verified scripts. Auto-updating executors, keyless system, and premium developer tools.
+                    </p>
+                    <div class="flex gap-4">
+                        <button onclick="showPage('scripts')" class="px-8 py-4 bg-white text-darker font-bold rounded-xl hover:bg-neon-blue hover:scale-105 transition duration-300">
+                            Explore Scripts
+                        </button>
+                        <button onclick="showPage('premium')" class="px-8 py-4 bg-transparent border border-white/20 font-bold rounded-xl hover:bg-white/5 transition">
+                            Get Premium
+                        </button>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">
+                        <div>
+                            <div class="text-3xl font-bold text-white">5K+</div>
+                            <div class="text-sm text-gray-500">Scripts</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">1.2M</div>
+                            <div class="text-sm text-gray-500">Executions</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">99%</div>
+                            <div class="text-sm text-gray-500">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 relative float-anim">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-neon-blue/20 to-neon-purple/20 rounded-full blur-3xl"></div>
+                    <div class="relative bg-[#111] border border-white/10 rounded-2xl p-4 shadow-2xl transform rotate-2 hover:rotate-0 transition duration-500">
+                        <div class="flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <div class="ml-auto text-xs text-gray-500">executor.lua</div>
+                        </div>
+                        <div class="font-mono text-sm space-y-2">
+                            <div class="text-neon-pink">local <span class="text-white">player</span> = game.Players.LocalPlayer</div>
+                            <div class="text-neon-blue">function <span class="text-yellow-400">GodMode</span>()</div>
+                            <div class="pl-4 text-gray-400">-- Bypassing anti-cheat...</div>
+                            <div class="pl-4 text-white">player.Character.Humanoid.Health = math.huge</div>
+                            <div class="text-neon-blue">end</div>
+                            <div class="text-green-400 pt-2">>> Script injected successfully!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCRIPTS PAGE -->
+        <section id="page-scripts" class="page-section hidden max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+                <div>
+                    <h2 class="text-4xl font-bold mb-2">Script Library</h2>
+                    <p class="text-gray-400">Browse verified scripts from top developers.</p>
+                </div>
+                <div class="flex gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-64">
+                        <input type="text" placeholder="Search game..." class="w-full bg-card border border-white/10 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-neon-blue transition text-sm text-white">
+                        <svg class="absolute left-3 top-3.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <select class="bg-card border border-white/10 rounded-lg px-4 py-3 focus:outline-none text-sm text-gray-400">
+                        <option>Popular</option>
+                        <option>Newest</option>
+                        <option>Verified</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="flex gap-3 overflow-x-auto pb-6 mb-2 no-scrollbar">
+                <button class="px-4 py-2 rounded-full bg-neon-blue text-darker font-bold text-sm whitespace-nowrap">All Scripts</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Blox Fruits</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Pet Sim 99</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Da Hood</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Doors</button>
+            </div>
+
+            <div id="scripts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- SCRIPT DETAIL PAGE (Hidden by default, shown when clicking a script) -->
+        <section id="page-script-detail" class="page-section hidden max-w-5xl mx-auto px-6">
+            <button onclick="showPage('scripts')" class="flex items-center text-gray-400 hover:text-white mb-6 transition">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                Back to Library
+            </button>
+
+            <div class="bg-card border border-white/10 rounded-2xl overflow-hidden">
+                <div class="h-48 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 relative">
+                    <div class="absolute -bottom-10 left-8 flex items-end gap-6">
+                        <div class="w-24 h-24 bg-darker rounded-xl border-2 border-card flex items-center justify-center text-4xl shadow-xl" id="detail-icon">
+                            🍎
+                        </div>
+                        <div class="mb-3">
+                            <h1 class="text-3xl font-bold" id="detail-title">Loading...</h1>
+                            <p class="text-neon-blue text-sm" id="detail-author">@developer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-16 px-8 pb-8">
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 space-y-6">
+                            <div>
+                                <h3 class="text-lg font-bold mb-3">Description</h3>
+                                <p class="text-gray-400 leading-relaxed" id="detail-desc">
+                                    This script includes Auto Farm, Auto Quest, Teleport, Fruit Sniper, and ESP features. Fully optimized for low-end PCs.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-bold mb-3 flex justify-between items-center">
+                                    <span>Script Source</span>
+                                    <span class="text-xs text-neon-purple bg-neon-purple/10 px-2 py-1 rounded">Lua</span>
+                                </h3>
+                                <div class="relative code-block rounded-lg p-4 text-sm overflow-x-auto text-gray-300">
+                                    <pre id="detail-code">loadstring(game:HttpGet("https://nexahub.com/scripts/loader.lua"))()</pre>
+                                    <button onclick="copyToClipboard()" class="absolute top-2 right-2 p-2 bg-white/10 hover:bg-white/20 rounded transition">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <button class="w-full py-4 bg-gradient-to-r from-neon-blue to-neon-purple rounded-xl font-bold text-white shadow-lg shadow-neon-blue/20 hover:opacity-90 transition transform active:scale-95">
+                                Execute Directly
+                            </button>
+                            <div class="bg-darker rounded-xl p-4 border border-white/5 space-y-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Last Updated</span>
+                                    <span class="text-white">2 hours ago</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Version</span>
+                                    <span class="text-white">v4.2</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Status</span>
+                                    <span class="text-green-400 flex items-center gap-2">
+                                        <span class="w-2 h-2 bg-green-400 rounded-full"></span> Safe
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXECUTORS PAGE -->
+        <section id="page-executors" class="page-section hidden max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Executor Status</h2>
+                <p class="text-gray-400">Real-time status of the most popular Roblox executors.</p>
+            </div>
+            <div id="executors-grid" class="grid md:grid-cols-3 gap-6">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- PREMIUM PAGE -->
+        <section id="page-premium" class="page-section hidden max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-neon-purple font-bold tracking-wider text-sm">UPGRADE YOUR GAME</span>
+                <h2 class="text-5xl font-bold mt-2 mb-6">Simple Pricing, <span class="text-gradient">Maximum Power</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Get access to private scripts, faster execution speeds, and priority support.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Free Tier -->
+                <div class="gradient-border bg-card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold text-gray-400 mb-2">Starter</h3>
+                    <div class="text-4xl font-bold mb-6">$0<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-8 text-gray-300">
+                        <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Access to Public Scripts</li>
+                        <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Standard Download Speed</li>
+                        <li class="flex items-center gap-3 text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> No Key System Bypass</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg border border-white/10 hover:bg-white/5 transition font-semibold">Current Plan</button>
+                </div>
+
+                <!-- Pro Tier -->
+                <div class="relative p-[2px] rounded-2xl bg-gradient-to-br from-neon-blue to-neon-purple transform scale-105 z-10 shadow-2xl shadow-neon-purple/20">
+                    <div class="bg-[#121525] p-8 rounded-2xl h-full">
+                        <div class="absolute top-0 right-0 bg-neon-purple text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">POPULAR</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Pro Elite</h3>
+                        <div class="text-4xl font-bold mb-6">$9.99<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                        <ul class="space-y-4 mb-8 text-white">
+                            <li class="flex items-center gap-3"><svg class="w-5 h-5 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Access to Private Scripts</li>
+                            <li class="flex items-center gap-3"><svg class="w-5 h-5 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Keyless Executor Access</li>
+                            <li class="flex items-center gap-3"><svg class="w-5 h-5 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> No Ads</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-lg bg-gradient-to-r from-neon-blue to-neon-purple hover:shadow-lg hover:shadow-neon-blue/30 transition font-bold text-white">Get Started</button>
+                    </div>
+                </div>
+
+                <!-- Dev Tier -->
+                <div class="gradient-border bg-card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold text-gray-400 mb-2">Developer</h3>
+                    <div class="text-4xl font-bold mb-6">$29<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-8 text-gray-300">
+                        <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Upload Paid Scripts</li>
+                        <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> API Access</li>
+                        <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Analytics Dashboard</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg border border-white/10 hover:bg-white/5 transition font-semibold">Apply for Dev</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS PAGE -->
+        <section id="page-settings" class="page-section hidden max-w-4xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-8">Settings & Configuration</h2>
+            
+            <div class="space-y-6">
+                <!-- Application Settings -->
+                <div class="bg-card rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-xl font-semibold mb-4 text-white">Application</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-2">
+                            <div>
+                                <div class="font-medium text-white">Auto-Inject</div>
+                                <div class="text-xs text-gray-400">Automatically attach when Roblox starts</div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-blue"></div>
+                            </label>
+                        </div>
+                        <div class="border-t border-white/5"></div>
+                        <div class="flex items-center justify-between py-2">
+                            <div>
+                                <div class="font-medium text-white">FPS Unlocker</div>
+                                <div class="text-xs text-gray-400">Bypass the 60 FPS limit</div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-blue"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="bg-card rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-xl font-semibold mb-4 text-white">Account</h3>
+                    <div class="grid gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Username</label>
+                            <input type="text" value="ScriptMaster99" class="w-full bg-darker border border-white/10 rounded-lg px-4 py-2 text-white focus:border-neon-purple focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                            <input type="email" value="user@nexahub.com" class="w-full bg-darker border border-white/10 rounded-lg px-4 py-2 text-white focus:border-neon-purple focus:outline-none">
+                        </div>
+                        <button class="w-max px-6 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition mt-2">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE PAGE -->
+        <section id="page-profile" class="page-section hidden max-w-6xl mx-auto px-6">
+            <div class="bg-card rounded-2xl p-8 border border-white/5 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20"></div>
+                
+                <div class="relative flex flex-col md:flex-row items-start md:items-end gap-6 mt-12">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-32 h-32 rounded-full border-4 border-card bg-gray-800">
+                    <div class="flex-1 mb-2">
+                        <h2 class="text-3xl font-bold text-white">ScriptMaster99</h2>
+                        <p class="text-neon-blue">Pro Member</p>
+                    </div>
+                    <div class="flex gap-3 mb-4">
+                        <button class="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition text-sm font-medium">Edit Profile</button>
+                        <button class="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition text-sm font-medium">Log Out</button>
+                    </div>
+                </div>
+                
+                <div class="flex gap-8 mt-8 border-t border-white/10 pt-6">
+                    <div>
+                        <span class="text-2xl font-bold text-white block">12</span>
+                        <span class="text-sm text-gray-500">Saved Scripts</span>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold text-white block">453</span>
+                        <span class="text-sm text-gray-500">Total Executions</span>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold text-white block">2y</span>
+                        <span class="text-sm text-gray-500">Member Since</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold mb-4">Saved Scripts</h3>
+            <div id="profile-scripts-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-card border border-neon-blue/30 text-white px-6 py-3 rounded-lg shadow-2xl transform translate-y-24 transition duration-300 flex items-center gap-3 z-50">
+        <svg class="w-5 h-5 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span id="toast-message">Operation Successful</span>
+    </div>
+
+    <script>
+        // --- Data ---
+        const SCRIPTS = [
+            {id: 1, title: "Blox Fruits Auto Farm", icon: "🍎", author: "RedZ Hub", category: "Farming", downloads: "450K", rating: 4.9, desc: "The best auto farm for Blox Fruits. Includes auto raid, auto quest, and fruit sniper.", code: 'loadstring(game:HttpGet("https://redz-hub.com/script.lua"))()'},
+            {id: 2, title: "Da Hood Aimlock", icon: "🔫", author: "SwagMode", category: "Combat", downloads: "120K", rating: 4.7, desc: "Silent aim, aimlock, and ESP for Da Hood. Undetected.", code: 'loadstring(game:HttpGet("https://swagmode.xyz/dahood.lua"))()'},
+            {id: 3, title: "Pet Sim 99 Gem Farm", icon: "💎", author: "PixelDev", category: "Farming", downloads: "200K", rating: 4.8, desc: "Infinite gem farming, auto hatch, and auto combine.", code: 'loadstring(game:HttpGet("https://pixeldev.net/ps99.lua"))()'},
+            {id: 4, title: "Doors Entity ESP", icon: "🚪", author: "GhostHunter", category: "Utility", downloads: "80K", rating: 4.6, desc: "See entities through walls, auto puzzle solver.", code: 'loadstring(game:HttpGet("https://ghost.hub/doors.lua"))()'},
+            {id: 5, title: "Blade Ball Auto Parry", icon: "⚔️", author: "ParryGod", category: "Combat", downloads: "300K", rating: 4.9, desc: "Automatically deflects the ball based on distance and ping.", code: 'loadstring(game:HttpGet("https://parrygod.gg/script"))()'},
+            {id: 6, title: "Arsenal Aimbot", icon: "🎯", author: "FPS_King", category: "Combat", downloads: "150K", rating: 4.5, desc: "Wallbang, hitboxes, and tracers.", code: 'loadstring(game:HttpGet("https://fpsking.io/arsenal"))()'},
+        ];
+
+        const EXECUTORS = [
+            {name: "Wave", status: "Working", platform: "Windows", version: "2.54"},
+            {name: "Krampus", status: "Patched", platform: "Windows", version: "1.0"},
+            {name: "Hydrogen", status: "Working", platform: "Android/Mac", version: "Beta"},
+            {name: "Delta", status: "Working", platform: "Android", version: "6.2"},
+        ];
+
+        // --- Core Functions ---
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+            // Show target page
+            const target = document.getElementById('page-' + pageId);
+            if(target) {
+                target.classList.remove('hidden');
+                target.classList.add('fade-in'); // You could add a CSS fade-in class
+            }
+            
+            // Update Navbar (Active State)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-white');
+                link.classList.add('text-gray-400');
+            });
+            // Very basic active state logic
+            // (In a real app, you'd match ID to index)
+            
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function openScriptDetail(id) {
+            const script = SCRIPTS.find(s => s.id === id);
+            if(!script) return;
+
+            document.getElementById('detail-title').innerText = script.title;
+            document.getElementById('detail-icon').innerText = script.icon;
+            document.getElementById('detail-author').innerText = '@' + script.author;
+            document.getElementById('detail-desc').innerText = script.desc;
+            document.getElementById('detail-code').innerText = script.code;
+            
+            showPage('script-detail');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24');
+            }, 3000);
+        }
+
+        function copyToClipboard() {
+            const code = document.getElementById('detail-code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast("Script copied to clipboard!");
+            });
+        }
+
+        // --- Render Functions ---
+
+        function renderScripts() {
+            const grid = document.getElementById('scripts-grid');
+            grid.innerHTML = SCRIPTS.map(script => `
+                <div class="gradient-border group cursor-pointer" onclick="openScriptDetail(${script.id})">
+                    <div class="gradient-border-inner flex flex-col h-full">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-darker rounded-lg flex items-center justify-center text-2xl shadow-inner">
+                                ${script.icon}
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 bg-white/5 rounded text-gray-400">${script.category}</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-neon-blue transition">${script.title}</h3>
+                        <p class="text-sm text-gray-500 mb-4">by ${script.author}</p>
+                        <div class="mt-auto pt-4 border-t border-white/5 flex justify-between text-xs text-gray-400">
+                            <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> ${script.downloads}</span>
+                            <span class="text-yellow-500">★ ${script.rating}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Reuse for profile
+            document.getElementById('profile-scripts-grid').innerHTML = grid.innerHTML;
+        }
+
+        function renderExecutors() {
+            const grid = document.getElementById('executors-grid');
+            grid.innerHTML = EXECUTORS.map(exec => {
+                const statusColor = exec.status === "Working" ? "text-success bg-success/10" : "text-red-500 bg-red-500/10";
+                const btnClass = exec.status === "Working" ? "bg-white text-darker hover:bg-gray-200" : "bg-white/5 text-gray-500 cursor-not-allowed";
+                
+                return `
+                <div class="bg-card border border-white/5 rounded-xl p-6 hover:border-white/10 transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-bold">${exec.name}</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${statusColor}">${exec.status}</span>
+                    </div>
+                    <div class="space-y-2 mb-6 text-sm text-gray-400">
+                        <div class="flex justify-between"><span>Platform</span> <span class="text-white">${exec.platform}</span></div>
+                        <div class="flex justify-between"><span>Version</span> <span class="text-white">${exec.version}</span></div>
+                    </div>
+                    <button class="w-full py-3 rounded-lg font-bold transition ${btnClass}">
+                        Download
+                    </button>
+                </div>
+            `}).join('');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScripts();
+            renderExecutors();
+            showPage('home'); // Default page
+        });
+
+    </script>
+</body>
+</html>
+
+frontend 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaHub - Ultimate Script Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Khmer Font for Language Button -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                        khmer: ['Noto Serif Khmer', 'serif'],
+                    },
+                    colors: {
+                        'dark': '#0a0e27',
+                        'darker': '#060918',
+                        'card': '#151932',
+                        'card-inner': '#111426', 
+                        'neon-blue': '#00d9ff',
+                        'neon-pink': '#ff0080',
+                        'neon-purple': '#b829ff',
+                        'success': '#00ff9d',
+                        'brand-yellow': '#fbbf24',
+                        'btn-primary': '#4f46e5',
+                        'btn-hover': '#4338ca'
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #060918; }
+        ::-webkit-scrollbar-thumb { background: #151932; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2d3748; }
+
+        .glass-nav {
+            background: rgba(6, 9, 24, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #00d9ff, #b829ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim { animation: float 4s ease-in-out infinite; }
+        
+        /* Syntax Highlighting Colors */
+        .syntax-func { color: #fbbf24; } /* yellow */
+        .syntax-var { color: #00d9ff; } /* blue */
+        .syntax-str { color: #4ade80; } /* green */
+        
+        /* Fade Animation */
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-darker text-gray-200 min-h-screen overflow-x-hidden selection:bg-neon-purple selection:text-white flex flex-col">
+
+    <!-- Background Ambient Glow -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-neon-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-neon-purple/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('home')">
+                <span class="text-2xl font-bold tracking-tight text-white">Nexa<span class="text-neon-blue">Hub</span></span>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8 bg-card/50 px-6 py-2 rounded-full border border-white/5">
+                <a href="#" onclick="showPage('home')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-white">Home</a>
+                <a href="#" onclick="showPage('scripts')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Scripts</a>
+                <a href="#" onclick="showPage('executors')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Executors</a>
+                <a href="#" onclick="showPage('premium')" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors text-gray-400">Premium</a>
+            </div>
+
+            <!-- Right Side (Login/Profile) -->
+            <div class="hidden md:flex items-center gap-4">
+                <button id="nav-login-btn" onclick="showPage('login')" class="px-5 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 text-white text-sm font-bold transition">
+                    Log In
+                </button>
+
+                <!-- USER CONTROLS WITH POST BUTTON -->
+                <div id="nav-user-controls" class="hidden items-center gap-4">
+                    <button onclick="showPage('post-script')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-btn-primary/20 hover:bg-btn-primary/40 border border-btn-primary/50 text-white text-xs font-bold transition">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> <span class="hidden lg:inline">Post Script</span>
+                    </button>
+                    
+                    <div class="w-px h-6 bg-white/10"></div>
+                    
+                    <button onclick="showPage('settings')" class="p-2 text-gray-400 hover:text-white transition">
+                        <i class="fa-solid fa-gear text-lg"></i>
+                    </button>
+                    <button onclick="showPage('profile')" class="w-10 h-10 rounded-full bg-gray-800 border border-neon-purple overflow-hidden">
+                        <img id="nav-avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-full h-full object-cover">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white text-2xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU OVERLAY & SIDEBAR -->
+    <div id="mobile-menu-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998] hidden transition-opacity duration-300"></div>
+
+    <div id="mobile-menu-sidebar" class="fixed top-0 left-0 h-full w-[280px] bg-[#060918] border-r border-white/10 z-[999] transform -translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-white/5 flex justify-between items-center">
+            <span class="text-2xl font-bold tracking-tight text-white">Nexa<span class="text-neon-blue">Hub</span></span>
+            <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+            <div class="space-y-1">
+                <div class="text-xs font-bold text-gray-500 uppercase mb-2 ml-1">Menu</div>
+                <a href="#" onclick="showPage('home'); toggleMobileMenu()" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-white font-medium transition"><i class="fa-solid fa-house w-6"></i> Home</a>
+                <a href="#" onclick="showPage('scripts'); toggleMobileMenu()" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-neon-blue transition"><i class="fa-solid fa-code w-6"></i> Scripts</a>
+                <a href="#" onclick="showPage('executors'); toggleMobileMenu()" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-neon-blue transition"><i class="fa-solid fa-terminal w-6"></i> Executors</a>
+                <a href="#" onclick="showPage('premium'); toggleMobileMenu()" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-neon-blue transition"><i class="fa-solid fa-crown w-6"></i> Premium</a>
+            </div>
+        </div>
+        <div class="p-6 border-t border-white/5 bg-black/20">
+            <button id="mobile-login-btn" onclick="showPage('login'); toggleMobileMenu()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-neon-blue to-btn-primary text-white font-bold text-center shadow-lg shadow-neon-blue/20 transition">
+                Log In
+            </button>
+            <div id="mobile-user-controls" class="hidden flex-col gap-4">
+                <div class="flex items-center gap-3 bg-card border border-white/10 p-3 rounded-xl">
+                    <img id="mobile-avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full border border-neon-purple bg-gray-800">
+                    <div class="flex-1 min-w-0">
+                        <div id="mobile-username" class="text-white font-bold text-sm truncate">ScriptMaster99</div>
+                        <div class="text-xs text-neon-blue">Pro Member</div>
+                    </div>
+                </div>
+                 <button onclick="showPage('post-script'); toggleMobileMenu()" class="w-full py-2 bg-btn-primary/20 border border-btn-primary/50 text-white rounded-lg font-bold text-sm">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Post Script
+                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="showPage('profile'); toggleMobileMenu()" class="flex items-center justify-center gap-2 py-2 bg-white/5 rounded-lg text-xs font-bold text-white hover:bg-white/10 transition">
+                        <i class="fa-regular fa-user"></i> Profile
+                    </button>
+                    <button onclick="showPage('settings'); toggleMobileMenu()" class="flex items-center justify-center gap-2 py-2 bg-white/5 rounded-lg text-xs font-bold text-white hover:bg-white/10 transition">
+                        <i class="fa-solid fa-gear"></i> Settings
+                    </button>
+                </div>
+                <button onclick="logout(); toggleMobileMenu()" class="flex items-center justify-center gap-2 py-2 text-red-500 hover:text-red-400 transition text-sm font-bold">
+                    <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="pt-32 pb-20 min-h-screen relative z-10">
+
+        <!-- HOME PAGE -->
+        <section id="page-home" class="page-section max-w-7xl mx-auto px-6 fade-in">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2 space-y-8">
+                    <h1 class="text-6xl lg:text-7xl font-bold leading-tight">
+                        Dominate <br>
+                        <span class="text-gradient">Roblox Gaming</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg max-w-lg">
+                        Access a library of over 5,000+ verified scripts. Auto-updating executors, keyless system, and premium developer tools.
+                    </p>
+                    <div class="flex gap-4">
+                        <button onclick="showPage('scripts')" class="px-8 py-4 bg-white text-darker font-bold rounded-xl hover:bg-neon-blue hover:scale-105 transition duration-300">
+                            Explore Scripts
+                        </button>
+                        <button onclick="showPage('signup')" class="px-8 py-4 bg-transparent border border-white/20 font-bold rounded-xl hover:bg-white/5 transition">
+                            Join Now
+                        </button>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">
+                        <div>
+                            <div class="text-3xl font-bold text-white">5K+</div>
+                            <div class="text-sm text-gray-500">Scripts</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">1.2M</div>
+                            <div class="text-sm text-gray-500">Executions</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">99%</div>
+                            <div class="text-sm text-gray-500">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 relative float-anim">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-neon-blue/20 to-neon-purple/20 rounded-full blur-3xl"></div>
+                    <div class="relative bg-[#111] border border-white/10 rounded-2xl p-4 shadow-2xl transform rotate-2 hover:rotate-0 transition duration-500">
+                        <div class="flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <div class="ml-auto text-xs text-gray-500">executor.lua</div>
+                        </div>
+                        <div class="font-mono text-sm space-y-2">
+                            <div class="text-neon-pink">local <span class="text-white">player</span> = game.Players.LocalPlayer</div>
+                            <div class="text-neon-blue">function <span class="text-brand-yellow">GodMode</span>()</div>
+                            <div class="pl-4 text-gray-400">-- Bypassing anti-cheat...</div>
+                            <div class="pl-4 text-white">player.Character.Humanoid.Health = math.huge</div>
+                            <div class="text-neon-blue">end</div>
+                            <div class="text-green-400 pt-2">>> Script injected successfully!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCRIPTS PAGE -->
+        <section id="page-scripts" class="page-section hidden max-w-7xl mx-auto px-6 fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+                <div>
+                    <h2 class="text-4xl font-bold mb-2">Script Library</h2>
+                    <p class="text-gray-400">Browse verified scripts from top developers.</p>
+                </div>
+                
+                <div class="flex gap-3 w-full md:w-auto items-center">
+                    <div class="flex gap-2 flex-1 md:w-80">
+                        <div class="relative flex-1">
+                            <input id="search-input" type="text" placeholder="Search game..." oninput="handleSearch()" class="w-full bg-card border border-white/10 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-neon-blue transition text-sm text-white">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-500 text-sm"></i>
+                        </div>
+                        <button onclick="handleSearch()" class="px-5 py-3 bg-neon-blue/10 hover:bg-neon-blue/20 border border-neon-blue/30 text-neon-blue rounded-lg text-sm font-bold transition">
+                            Search
+                        </button>
+                    </div>
+                    <select class="bg-card border border-white/10 rounded-lg px-4 py-3 focus:outline-none text-sm text-gray-400">
+                        <option>Popular</option>
+                        <option>Newest</option>
+                        <option>Verified</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-3 overflow-x-auto pb-6 mb-2">
+                <button class="px-4 py-2 rounded-full bg-neon-blue text-darker font-bold text-sm whitespace-nowrap">All Scripts</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Blox Fruits</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Pet Sim 99</button>
+                <button class="px-4 py-2 rounded-full bg-card border border-white/5 hover:bg-white/5 transition text-sm whitespace-nowrap">Da Hood</button>
+            </div>
+
+            <div id="scripts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Javascript will populate this -->
+            </div>
+        </section>
+
+        <!-- SCRIPT DETAIL PAGE -->
+        <section id="page-script-detail" class="page-section hidden max-w-6xl mx-auto px-6 fade-in">
+            <button onclick="showPage('scripts')" class="flex items-center text-gray-400 hover:text-white mb-8 transition group">
+                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mr-3 group-hover:bg-neon-blue group-hover:text-darker transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                <span class="font-medium">Back to Library</span>
+            </button>
+
+            <div class="space-y-6">
+                <div class="bg-card border border-white/10 rounded-2xl p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-5/12">
+                            <div class="relative rounded-xl overflow-hidden aspect-video shadow-2xl group">
+                                <img id="detail-image" src="" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white flex items-center gap-2">
+                                    <i class="fa-regular fa-eye"></i> <span id="detail-views">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-7/12 flex flex-col">
+                            <div class="flex-1">
+                                <h1 id="detail-title" class="text-3xl md:text-4xl font-bold text-white mb-2 leading-tight">Script Title</h1>
+                                <div class="flex flex-wrap items-center gap-3 mb-6">
+                                    <span class="bg-neon-purple/10 text-neon-purple border border-neon-purple/20 px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-thumbtack"></i> Universal Script
+                                    </span>
+                                    <span id="detail-badge" class="bg-brand-yellow text-black px-3 py-1 rounded text-xs font-bold">
+                                        KEY SYSTEM
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-neon-blue to-neon-purple flex items-center justify-center font-bold text-white text-lg shadow-lg">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Uploaded by</div>
+                                        <div id="detail-author" class="text-white font-bold hover:text-neon-blue cursor-pointer transition">@Author</div>
+                                    </div>
+                                    <div class="w-px h-8 bg-white/10 mx-2"></div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Posted</div>
+                                        <div id="detail-date" class="text-white font-medium">1 hour ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <button class="w-full py-3.5 bg-btn-primary hover:bg-btn-hover text-white rounded-lg font-bold shadow-lg shadow-indigo-500/20 transition flex items-center justify-center gap-2 group active:scale-[0.98]">
+                                    <span class="font-mono text-lg">>_</span> Direct Execute
+                                </button>
+                                <div class="text-center">
+                                    <a href="#" class="text-xs text-gray-500 hover:text-white underline decoration-gray-600 underline-offset-4">Set up Direct Execute</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-white/10 rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Description</h3>
+                    <div id="detail-desc" class="text-gray-400 text-sm leading-relaxed whitespace-pre-line font-sans"></div>
+                </div>
+
+                <div class="bg-card border border-white/10 rounded-2xl overflow-hidden">
+                    <div class="bg-card-inner border-b border-white/5 p-4 flex justify-between items-center">
+                        <span class="font-bold text-white">View Raw</span>
+                        <div class="flex gap-2">
+                            <button onclick="copyToClipboard()" class="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-white/20 hover:bg-white/5 rounded text-xs font-bold text-white transition">
+                                <i class="fa-regular fa-copy"></i> Copy Script
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-0 bg-[#0d1117]">
+                        <pre class="p-6 overflow-x-auto text-sm font-mono text-gray-300"><code id="detail-code">-- Loading...</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- NEW POST SCRIPT PAGE (UPDATED WITH MOBILE PREVIEW & FILE INPUT) -->
+        <section id="page-post-script" class="page-section hidden max-w-7xl mx-auto px-6 fade-in">
+            <h2 class="text-3xl font-bold mb-8">Post a New Script</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- LEFT COLUMN: FORM -->
+                <div class="bg-card rounded-2xl p-6 md:p-8 border border-white/5 shadow-xl h-fit">
+                    <form onsubmit="handlePostScript(event)" class="space-y-6">
+                        <!-- Title & Game -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Script Title</label>
+                                <input id="post-title" type="text" oninput="updatePreview()" required placeholder="Ex: Auto Farm Super OP" class="w-full bg-card-inner border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-neon-blue transition placeholder-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Game Name</label>
+                                <input id="post-game" type="text" oninput="updatePreview()" required placeholder="Ex: Blox Fruits" class="w-full bg-card-inner border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-neon-blue transition placeholder-gray-700">
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Key System?</label>
+                                <select id="post-key" onchange="updatePreview()" class="w-full bg-card-inner border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-neon-blue transition">
+                                    <option value="false">No Key (Free)</option>
+                                    <option value="true">Key System</option>
+                                </select>
+                            </div>
+                            <!-- THUMBNAIL FILE INPUT -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Thumbnail (Optional)</label>
+                                <label class="flex flex-col items-center justify-center w-full h-[52px] border border-white/10 bg-card-inner rounded-xl cursor-pointer hover:bg-white/5 transition group">
+                                    <div class="flex items-center gap-2 text-gray-500 group-hover:text-neon-blue">
+                                        <i class="fa-solid fa-image"></i>
+                                        <span class="text-xs font-bold">Choose Image</span>
+                                    </div>
+                                    <input id="post-file" type="file" class="hidden" accept="image/png, image/jpeg" onchange="previewFile(this)">
+                                </label>
+                                <p class="text-[10px] text-gray-500 mt-1 ml-1">Supports JPG, PNG (Max 2MB)</p>
+                            </div>
+                        </div>
+
+                        <!-- DESCRIPTION OPTIONAL -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Description (Optional)</label>
+                            <textarea id="post-desc" rows="4" oninput="updatePreview()" placeholder="Describe features..." class="w-full bg-card-inner border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-neon-blue transition placeholder-gray-700"></textarea>
+                        </div>
+
+                        <!-- Code -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Lua Script / Loadstring</label>
+                            <textarea id="post-code" required rows="6" oninput="updatePreview()" placeholder='loadstring(game:HttpGet("..."))()' class="w-full bg-[#0d1117] border border-white/10 rounded-xl py-3 px-4 text-sm font-mono text-gray-300 focus:outline-none focus:border-neon-blue transition"></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="pt-4 border-t border-white/5 flex gap-4">
+                            <button type="button" onclick="showPage('home')" class="px-6 py-4 rounded-xl border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white font-bold transition">Cancel</button>
+                            <button type="submit" class="flex-1 py-4 bg-gradient-to-r from-neon-blue to-btn-primary rounded-xl font-bold text-white shadow-lg shadow-neon-blue/20 hover:scale-[1.01] transition">
+                                Publish Script
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- RIGHT COLUMN: LIVE PREVIEW (Visible on mobile below form) -->
+                <div class="relative mt-8 lg:mt-0">
+                    <div class="lg:sticky lg:top-28">
+                        <div class="flex items-center gap-2 mb-4 text-gray-400">
+                            <i class="fa-regular fa-eye"></i> <span class="text-sm font-bold uppercase tracking-wide">Live Preview</span>
+                        </div>
+                        
+                        <!-- Preview Card -->
+                        <div class="bg-card border border-white/10 rounded-2xl p-6 shadow-2xl scale-[0.95] origin-top-left w-full">
+                            <div class="flex flex-col gap-6">
+                                <div class="flex gap-4">
+                                    <!-- Preview Image -->
+                                    <div class="w-5/12">
+                                        <div class="relative rounded-xl overflow-hidden aspect-video bg-black/40">
+                                            <img id="prev-img" src="https://via.placeholder.com/640x360/111426/ffffff?text=Script+Preview" class="w-full h-full object-cover">
+                                            <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-white flex items-center gap-1">
+                                                <i class="fa-regular fa-eye"></i> 0
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Preview Meta -->
+                                    <div class="w-7/12 flex flex-col">
+                                        <h1 id="prev-title" class="text-xl font-bold text-white mb-2 leading-tight line-clamp-2">Script Title</h1>
+                                        
+                                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                                            <span class="bg-neon-purple/10 text-neon-purple border border-neon-purple/20 px-2 py-0.5 rounded-[4px] text-[10px] font-bold">
+                                                Universal Script
+                                            </span>
+                                            <span id="prev-badge" class="bg-green-500 text-black px-2 py-0.5 rounded-[4px] text-[10px] font-bold">
+                                                KEYLESS
+                                            </span>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 mb-auto">
+                                            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-neon-blue to-neon-purple flex items-center justify-center text-[10px] font-bold text-white">
+                                                <i class="fa-solid fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-[10px] text-gray-400">Uploaded by</div>
+                                                <div id="prev-author" class="text-white text-xs font-bold">@ScriptMaster99</div>
+                                            </div>
+                                            <div class="w-px h-6 bg-white/10 mx-1"></div>
+                                            <div>
+                                                <div class="text-[10px] text-gray-400">Posted</div>
+                                                <div class="text-white text-xs font-medium">Just now</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="w-full py-2 bg-btn-primary text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 opacity-80 cursor-default">
+                                    <span class="font-mono">>_</span> Direct Execute
+                                </button>
+
+                                <div class="bg-card-inner rounded-xl p-4 border border-white/5">
+                                    <h3 class="text-sm font-bold text-white mb-2">Description</h3>
+                                    <div id="prev-desc" class="text-gray-400 text-xs leading-relaxed whitespace-pre-line min-h-[3rem]">Describe features...</div>
+                                </div>
+
+                                <div class="bg-black/40 rounded-xl overflow-hidden border border-white/5">
+                                    <div class="bg-card-inner border-b border-white/5 px-3 py-2 flex justify-between items-center">
+                                        <span class="font-bold text-white text-xs">View Raw</span>
+                                        <div class="flex gap-1">
+                                            <span class="text-[10px] text-gray-400"><i class="fa-regular fa-copy"></i> Copy Script</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 bg-[#0d1117] overflow-hidden">
+                                        <code id="prev-code" class="text-xs font-mono text-gray-300 break-all">loadstring(...)</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXECUTORS PAGE -->
+        <section id="page-executors" class="page-section hidden max-w-7xl mx-auto px-6 fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Platform - All</h2>
+                <p class="text-gray-400">Real-time status of the most popular Roblox executors.</p>
+            </div>
+            <div id="executors-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- PREMIUM PAGE -->
+        <section id="page-premium" class="page-section hidden max-w-7xl mx-auto px-6 fade-in">
+            <div class="text-center mb-16">
+                <span class="text-neon-purple font-bold tracking-wider text-sm">UPGRADE YOUR GAME</span>
+                <h2 class="text-5xl font-bold mt-2 mb-6">Simple Pricing, <span class="text-gradient">Maximum Power</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Get access to private scripts, faster execution speeds, and priority support.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                 <!-- Plans -->
+                 <div class="gradient-border bg-card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold text-gray-400 mb-2">Starter</h3>
+                    <div class="text-4xl font-bold mb-6">$0<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-8 text-gray-300">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-success"></i> Access to Public Scripts</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg border border-white/10 hover:bg-white/5 transition font-semibold">Current Plan</button>
+                </div>
+                <div class="relative p-[2px] rounded-2xl bg-gradient-to-br from-neon-blue to-neon-purple transform scale-105 z-10 shadow-2xl shadow-neon-purple/20">
+                    <div class="bg-[#121525] p-8 rounded-2xl h-full">
+                        <div class="absolute top-0 right-0 bg-neon-purple text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">POPULAR</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Pro Elite</h3>
+                        <div class="text-4xl font-bold mb-6">$9.99<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                        <ul class="space-y-4 mb-8 text-white">
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-neon-blue"></i> Access to Private Scripts</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-lg bg-gradient-to-r from-neon-blue to-neon-purple hover:shadow-lg hover:shadow-neon-blue/30 transition font-bold text-white">Get Started</button>
+                    </div>
+                </div>
+                <div class="gradient-border bg-card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold text-gray-400 mb-2">Developer</h3>
+                    <div class="text-4xl font-bold mb-6">$29<span class="text-lg text-gray-500 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-8 text-gray-300">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-success"></i> Upload Paid Scripts</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg border border-white/10 hover:bg-white/5 transition font-semibold">Apply for Dev</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS PAGE -->
+        <section id="page-settings" class="page-section hidden max-w-4xl mx-auto px-6 fade-in">
+            <h2 class="text-3xl font-bold mb-8">Settings & Configuration</h2>
+            <div class="space-y-8">
+                <!-- Appearance -->
+                <div class="bg-card rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-xl font-semibold mb-6 text-white border-b border-white/5 pb-4">Profile Appearance</h3>
+                    <div class="relative group mb-12">
+                        <!-- Banner -->
+                        <div class="h-40 w-full rounded-t-xl bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 overflow-hidden relative">
+                            <img src="" class="w-full h-full object-cover opacity-50" id="settings-banner-preview">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition cursor-pointer" onclick="document.getElementById('upload-banner').click()">
+                                <span class="text-white font-bold"><i class="fa-solid fa-camera"></i> Change Cover</span>
+                            </div>
+                            <input type="file" id="upload-banner" class="hidden" onchange="previewImage(this, 'settings-banner-preview')">
+                        </div>
+                        <!-- Avatar -->
+                        <div class="absolute -bottom-10 left-6 w-24 h-24">
+                            <div class="relative w-full h-full">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-full h-full rounded-full border-4 border-card bg-gray-800 object-cover" id="settings-avatar-preview">
+                                <div class="absolute inset-0 rounded-full flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition cursor-pointer" onclick="document.getElementById('upload-avatar').click()">
+                                    <i class="fa-solid fa-camera text-white"></i>
+                                </div>
+                                <input type="file" id="upload-avatar" class="hidden" onchange="previewImage(this, 'settings-avatar-preview')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account -->
+                <div class="bg-card rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-xl font-semibold mb-6 text-white border-b border-white/5 pb-4">Account Information</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Display Name</label>
+                            <div class="flex gap-3">
+                                <input type="text" id="settings-username-input" value="ScriptMaster99" class="flex-1 bg-card-inner border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-neon-blue transition">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button onclick="saveSettings()" class="flex-1 py-3 bg-neon-blue hover:bg-blue-600 text-darker font-bold rounded-xl transition">
+                        Save Changes
+                    </button>
+                    <button onclick="logout()" class="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl font-bold transition">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE PAGE -->
+        <section id="page-profile" class="page-section hidden max-w-6xl mx-auto px-6 fade-in">
+            <div class="bg-card rounded-2xl p-8 border border-white/5 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20">
+                    <img id="profile-banner-img" src="" class="w-full h-full object-cover opacity-30 hidden">
+                </div>
+                <div class="relative flex flex-col md:flex-row items-start md:items-end gap-6 mt-12">
+                    <img id="profile-avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-32 h-32 rounded-full border-4 border-card bg-gray-800 object-cover">
+                    <div class="flex-1 mb-2">
+                        <h2 id="profile-username" class="text-3xl font-bold text-white">ScriptMaster99</h2>
+                        <p class="text-neon-blue">Pro Member</p>
+                    </div>
+                    <button onclick="showPage('settings')" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition">
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold mb-4">Saved Scripts</h3>
+            <div id="profile-scripts-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- LOGIN PAGE -->
+        <section id="page-login" class="page-section hidden w-full flex items-center justify-center pt-8 fade-in">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
+                    <p class="text-gray-400">Log in to access your premium scripts.</p>
+                </div>
+
+                <div class="bg-card border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-neon-blue/10 rounded-full blur-[50px] pointer-events-none"></div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button class="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#5865F2]/20 hover:bg-[#5865F2]/30 border border-[#5865F2]/50 text-white transition duration-300">
+                            <i class="fa-brands fa-discord text-[#5865F2]"></i> Discord
+                        </button>
+                        <button class="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition duration-300">
+                            <i class="fa-brands fa-google"></i> Google
+                        </button>
+                    </div>
+
+                    <form onsubmit="handleLogin(event)" class="space-y-5">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Email or Username</label>
+                            <div class="relative">
+                                <i class="fa-regular fa-user absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="text" required placeholder="admin@nexahub.com" class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-neon-blue transition">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center ml-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase">Password</label>
+                                <a href="#" class="text-xs text-neon-blue hover:text-white transition">Forgot?</a>
+                            </div>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="password" required placeholder="••••••••" class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-neon-blue transition">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-login-submit" class="w-full py-3.5 bg-gradient-to-r from-neon-blue to-btn-primary rounded-xl font-bold text-white shadow-lg shadow-neon-blue/20 hover:shadow-neon-blue/40 hover:scale-[1.02] transition duration-300">
+                            Sign In
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center text-sm text-gray-400">
+                        Don't have an account? <a href="#" onclick="showPage('signup')" class="text-white font-bold hover:text-neon-blue transition">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIGN UP PAGE -->
+        <section id="page-signup" class="page-section hidden w-full flex items-center justify-center pt-8 fade-in">
+            <div class="w-full max-w-lg"> 
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-2">Join the Elite</h2>
+                    <p class="text-gray-400">Create an account to save scripts and config.</p>
+                </div>
+                <div class="bg-card border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-neon-purple/20 rounded-full blur-[60px] pointer-events-none"></div>
+                    <form onsubmit="handleSignup(event)" class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Username</label>
+                            <div class="relative">
+                                <i class="fa-regular fa-user absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="text" required class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-neon-purple transition placeholder-gray-700" placeholder="User123">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Email Address</label>
+                            <div class="relative">
+                                <i class="fa-regular fa-envelope absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="email" required class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-neon-purple transition placeholder-gray-700" placeholder="you@example.com">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Password</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="password" required class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-neon-purple transition placeholder-gray-700" placeholder="••••••••">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Confirm Password</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-check-double absolute left-4 top-3.5 text-gray-500"></i>
+                                <input type="password" required class="w-full bg-card-inner border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-neon-purple transition placeholder-gray-700" placeholder="••••••••">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 pt-3">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" required id="terms" class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-white/20 bg-card-inner transition-all checked:border-neon-purple checked:bg-neon-purple">
+                                <i class="fa-solid fa-check absolute left-1 top-1 text-xs text-white opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <label for="terms" class="text-xs text-gray-400 cursor-pointer select-none">I agree to the <a href="#" class="text-white hover:underline hover:text-neon-purple transition">Terms of Service</a></label>
+                        </div>
+                        <button type="submit" id="btn-signup-submit" class="w-full py-3.5 mt-2 bg-gradient-to-r from-neon-purple to-pink-600 rounded-xl font-bold text-white shadow-lg shadow-neon-purple/20 hover:shadow-neon-purple/40 hover:scale-[1.02] transition duration-300">
+                            Create Account
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center text-sm text-gray-400">
+                        Already have an account? <a href="#" onclick="showPage('login')" class="text-white font-bold hover:text-neon-purple transition">Log In</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- UPDATED FOOTER -->
+    <footer id="footer-contact" class="bg-black/80 border-t border-white/5 backdrop-blur-md mt-auto relative z-20">
+        <!-- Optional: Diagonal Lines Pattern Overlay -->
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 10px 10px;"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 py-12 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                
+                <!-- Column 1: Brand & Socials -->
+                <div class="space-y-6">
+                    <a href="#" class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                             <!-- Using the avatar from the header as a logo placeholder or the text N -->
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-xl font-bold text-white">NexaHub</span>
+                    </a>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Your #1 source for Roblox scripting utilities, executors, and premium tools. Providing free downloads and resources for the community.
+                    </p>
+                    
+                    <!-- Social Icons -->
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#229ED9] transition duration-300">
+                            <i class="fa-brands fa-telegram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#1877F2] transition duration-300">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-[#FF0000] transition duration-300">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-red-500 hover:to-purple-500 transition duration-300">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-6">
+                        Quick Links
+                        <span class="block h-0.5 w-12 bg-brand-yellow mt-2"></span>
+                    </h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" onclick="showPage('home')" class="text-gray-400 hover:text-brand-yellow transition-colors inline-block text-sm">Home</a></li>
+                        <li><a href="#" onclick="showPage('scripts')" class="text-gray-400 hover:text-brand-yellow transition-colors inline-block text-sm">Scripts</a></li>
+                        <li><a href="#" onclick="showPage('executors')" class="text-gray-400 hover:text-brand-yellow transition-colors inline-block text-sm">Executors</a></li>
+                        <li><a href="#" onclick="showPage('premium')" class="text-gray-400 hover:text-brand-yellow transition-colors inline-block text-sm">Premium Store</a></li>
+                        <li><a href="#" onclick="showPage('settings')" class="text-gray-400 hover:text-brand-yellow transition-colors inline-block text-sm">About</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact Us -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-6">
+                        Contact Us
+                        <span class="block h-0.5 w-12 bg-brand-yellow mt-2"></span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-envelope text-brand-yellow mt-1"></i>
+                            <p class="text-gray-400 text-sm">For support, please reach out via our social channels or Discord.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-info text-brand-yellow mt-1"></i>
+                            <p class="text-gray-400 text-sm">We do not offer direct phone or email support at this time.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 4: Language -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-6">
+                        Language
+                        <span class="block h-0.5 w-12 bg-brand-yellow mt-2"></span>
+                    </h3>
+                    <div class="flex gap-3">
+                        <button class="px-6 py-2 rounded-full bg-brand-yellow text-black font-bold text-sm hover:opacity-90 transition">
+                            English
+                        </button>
+                        <button class="px-6 py-2 rounded-full border border-white/20 text-gray-300 font-medium text-sm hover:bg-white/10 transition font-khmer">
+                            ខ្មែរ
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Copyright / Bottom -->
+            <div class="border-t border-white/10 mt-12 pt-8 text-center text-sm text-gray-500">
+                &copy; 2024 NexaHub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-card border border-neon-blue/30 text-white px-6 py-3 rounded-lg shadow-2xl transform translate-y-24 transition duration-300 flex items-center gap-3 z-50">
+        <i class="fa-solid fa-circle-check text-neon-blue"></i>
+        <span id="toast-message">Operation Successful</span>
+    </div>
+
+    <!-- JAVASCRIPT CONNECTED TO PYTHON BACKEND -->
+    <script>
+        const API_URL = "http://127.0.0.1:5000/api";
+        let isLoggedIn = false;
+        let currentUser = null;
+        let SCRIPTS = []; 
+
+        // --- Core Functions ---
+
+        async function checkAuth() {
+            try {
+                const res = await fetch(`${API_URL}/me`, { headers: {'Content-Type': 'application/json'}, credentials: 'include' });
+                const data = await res.json();
+                
+                if (data.is_logged_in) {
+                    isLoggedIn = true;
+                    currentUser = data.username;
+                    updateAuthUI(data);
+                } else {
+                    isLoggedIn = false;
+                    updateAuthUI(null);
+                }
+            } catch (err) { console.error("API Error", err); }
+        }
+
+        function updateAuthUI(user) {
+            const loginBtn = document.getElementById('nav-login-btn');
+            const userControls = document.getElementById('nav-user-controls');
+            const mobileLoginBtn = document.getElementById('mobile-login-btn');
+            const mobileUserControls = document.getElementById('mobile-user-controls');
+
+            if (isLoggedIn) {
+                loginBtn.classList.add('hidden');
+                userControls.classList.remove('hidden');
+                userControls.classList.add('flex');
+                
+                document.getElementById('nav-avatar-img').src = user.avatar;
+                document.getElementById('profile-avatar-img').src = user.avatar;
+                document.getElementById('mobile-avatar-img').src = user.avatar;
+                document.getElementById('profile-username').innerText = user.username;
+                document.getElementById('mobile-username').innerText = user.username;
+
+                if(mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
+                if(mobileUserControls) {
+                    mobileUserControls.classList.remove('hidden');
+                    mobileUserControls.classList.add('flex');
+                }
+            } else {
+                loginBtn.classList.remove('hidden');
+                userControls.classList.add('hidden');
+                userControls.classList.remove('flex');
+
+                if(mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
+                if(mobileUserControls) {
+                    mobileUserControls.classList.add('hidden');
+                    mobileUserControls.classList.remove('flex');
+                }
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login-submit');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+            
+            const inputs = e.target.querySelectorAll('input');
+            const login = inputs[0].value;
+            const password = inputs[1].value;
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ login, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    isLoggedIn = true;
+                    updateAuthUI(data);
+                    showToast("Successfully Logged In!");
+                    showPage('home');
+                } else {
+                    showToast(data.error);
+                }
+            } catch (err) { showToast("Server Error"); }
+            btn.innerHTML = "Sign In";
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-signup-submit');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating...';
+            
+            const inputs = e.target.querySelectorAll('input');
+            const username = inputs[0].value;
+            const email = inputs[1].value;
+            const password = inputs[2].value;
+
+            try {
+                const res = await fetch(`${API_URL}/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                
+                if (res.ok) {
+                    showToast("Account Created! Please Log In.");
+                    showPage('login');
+                } else {
+                    const data = await res.json();
+                    showToast(data.error);
+                }
+            } catch (err) { showToast("Server Error"); }
+            btn.innerHTML = "Create Account";
+        }
+
+        async function logout() {
+            await fetch(`${API_URL}/logout`, { method: 'POST', credentials: 'include' });
+            window.location.reload();
+        }
+
+        // --- Data Fetching ---
+
+        async function fetchScripts() {
+            try {
+                const res = await fetch(`${API_URL}/scripts`);
+                SCRIPTS = await res.json();
+                renderScripts();
+            } catch (err) { console.log("Failed to load scripts"); }
+        }
+
+        async function fetchExecutors() {
+            try {
+                const res = await fetch(`${API_URL}/executors`);
+                const executors = await res.json();
+                const grid = document.getElementById('executors-grid');
+                grid.innerHTML = executors.map(exec => {
+                    const isWorking = exec.status === "Working";
+                    const borderColor = isWorking ? "border-green-500/50 hover:shadow-green-500/20" : "border-red-500/50 hover:shadow-red-500/20";
+                    return `
+                    <div class="bg-card-inner border ${borderColor} rounded-xl p-4 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-4">
+                                <div class="w-20 h-20 rounded-lg overflow-hidden bg-black/50 border border-white/5 flex-shrink-0">
+                                    <img src="${exec.image}" alt="${exec.name}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-xl font-bold text-white">${exec.name}</h3>
+                                        <span class="text-[10px] px-1.5 py-0.5 rounded border border-purple-500/30 bg-purple-500/10 text-purple-300 uppercase font-semibold tracking-wider">${exec.type}</span>
+                                    </div>
+                                    <div class="text-gray-400 text-sm"><span class="text-gray-500">Platform:</span> ${exec.platform}</div>
+                                    <div class="text-gray-400 text-sm"><span class="text-gray-500">Version:</span> ${exec.version}</div>
+                                    <div class="text-gray-500 text-xs mt-1">Last updated: <br>${exec.lastUpdated}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="${exec.link}" target="_blank" class="w-full bg-[#1e2337] hover:bg-neon-blue hover:text-darker text-white py-3 rounded-lg font-bold transition-all duration-300 text-sm uppercase tracking-wide border border-white/5 flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-download group-hover:animate-bounce"></i> Download
+                        </a>
+                    </div>`;
+                }).join('');
+            } catch(err) {}
+        }
+
+        // --- FILE UPLOAD AND POST LOGIC (UPDATED) ---
+        
+        function previewFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prev-img').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function handlePostScript(e) {
+            e.preventDefault();
+            if(!isLoggedIn) return showToast("Please log in first!");
+
+            const btn = e.submitter || e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Publishing...';
+
+            const title = document.getElementById('post-title').value;
+            const game = document.getElementById('post-game').value;
+            const desc = document.getElementById('post-desc').value;
+            const code = document.getElementById('post-code').value;
+            const isKey = document.getElementById('post-key').value === "true";
+
+            // Process Image File
+            const fileInput = document.getElementById('post-file');
+            let imageData = null;
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                imageData = await new Promise(resolve => {
+                    reader.onload = ev => resolve(ev.target.result);
+                    reader.readAsDataURL(fileInput.files[0]);
+                });
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/scripts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        title, game, code, description: desc, isKeySystem: isKey, image: imageData 
+                    })
+                });
+
+                if (res.ok) {
+                    showToast("Script Submitted!");
+                    fetchScripts();
+                    showPage('home');
+                } else { showToast("Error publishing script"); }
+            } catch (err) { showToast("Connection Error"); }
+            
+            btn.innerHTML = "Publish Script";
+        }
+
+        // --- Render UI ---
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('page-' + pageId);
+            if(target) target.classList.remove('hidden');
+            
+            const sidebar = document.getElementById('mobile-menu-sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            if (sidebar) sidebar.classList.add('-translate-x-full');
+            if (overlay) overlay.classList.add('hidden');
+            
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobile-menu-sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            sidebar.classList.toggle('translate-x-0');
+            overlay.classList.toggle('hidden');
+        }
+
+        function highlightCode(code) {
+             return code
+                .replace(/loadstring/g, '<span class="syntax-func">loadstring</span>')
+                .replace(/game/g, '<span class="syntax-var">game</span>')
+                .replace(/HttpGet/g, '<span class="syntax-var">HttpGet</span>')
+                .replace(/"(.*?)"/g, '<span class="syntax-str">"$1"</span>');
+        }
+
+        function renderScripts(query = '') {
+            const grid = document.getElementById('scripts-grid');
+            const filteredScripts = SCRIPTS.filter(script => {
+                const search = query.toLowerCase();
+                return script.title.toLowerCase().includes(search) || 
+                       script.game.toLowerCase().includes(search) ||
+                       script.author.toLowerCase().includes(search);
+            });
+
+            if (filteredScripts.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">No scripts found.</div>`;
+                return;
+            }
+
+            const content = filteredScripts.map(script => `
+                <div class="bg-card rounded-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300 shadow-xl border border-white/5 cursor-pointer" onclick="openScriptDetail(${script.id})">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${script.image}" class="w-full h-full object-cover group-hover:brightness-110 transition duration-500">
+                        <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-white flex items-center gap-1 font-medium">
+                            <i class="fa-regular fa-eye"></i> ${script.views}
+                        </div>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-white font-medium">
+                            ${script.date}
+                        </div>
+                        ${script.isKeySystem ? `<span class="absolute bottom-2 left-2 bg-brand-yellow text-black text-[10px] font-bold px-2 py-1 rounded">Key System</span>` : ''}
+                        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-white flex items-center gap-1 font-medium border border-white/10">
+                            <i class="fa-solid fa-lock-open"></i> ${script.type}
+                        </div>
+                    </div>
+                    <div class="p-3 bg-card-inner">
+                        <div class="text-neon-blue text-xs font-medium truncate mb-1 hover:underline">${script.game}</div>
+                        <h3 class="text-white font-bold text-sm leading-tight line-clamp-2 group-hover:text-neon-blue transition-colors">${script.title}</h3>
+                    </div>
+                </div>
+            `).join('');
+            
+            grid.innerHTML = content;
+            const profileGrid = document.getElementById('profile-scripts-grid');
+            if(profileGrid && currentUser) {
+                const myScripts = SCRIPTS.filter(s => s.author === currentUser);
+                profileGrid.innerHTML = myScripts.length ? content : "<div class='text-gray-500'>No saved scripts.</div>";
+            }
+        }
+
+        function openScriptDetail(id) {
+            const script = SCRIPTS.find(s => s.id === id);
+            if(!script) return;
+
+            document.getElementById('detail-title').innerText = script.title;
+            document.getElementById('detail-author').innerText = '@' + script.author;
+            document.getElementById('detail-views').innerText = script.views;
+            document.getElementById('detail-date').innerText = script.date;
+            document.getElementById('detail-image').src = script.image;
+            document.getElementById('detail-desc').innerHTML = script.description || "No description provided.";
+            document.getElementById('detail-code').innerHTML = highlightCode(script.code);
+
+            const badge = document.getElementById('detail-badge');
+            if (script.isKeySystem) {
+                badge.innerText = "KEY SYSTEM";
+                badge.className = "bg-brand-yellow text-black px-3 py-1 rounded text-xs font-bold";
+            } else {
+                badge.innerText = "KEYLESS";
+                badge.className = "bg-green-500 text-black px-3 py-1 rounded text-xs font-bold";
+            }
+            showPage('script-detail');
+        }
+
+        function handleSearch() {
+            renderScripts(document.getElementById('search-input').value);
+        }
+
+        function updatePreview() {
+            const title = document.getElementById('post-title').value || "Script Title";
+            const desc = document.getElementById('post-desc').value || "Describe features...";
+            const code = document.getElementById('post-code').value || 'loadstring(game:HttpGet("..."))()';
+            const isKey = document.getElementById('post-key').value === "true";
+            
+            document.getElementById('prev-title').innerText = title;
+            document.getElementById('prev-desc').innerText = desc;
+            document.getElementById('prev-code').innerHTML = highlightCode(code);
+            const badge = document.getElementById('prev-badge');
+            if(isKey) {
+                badge.innerText = "KEY SYSTEM";
+                badge.className = "bg-brand-yellow text-black px-2 py-0.5 rounded-[4px] text-[10px] font-bold";
+            } else {
+                badge.innerText = "KEYLESS";
+                badge.className = "bg-green-500 text-black px-2 py-0.5 rounded-[4px] text-[10px] font-bold";
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => { toast.classList.add('translate-y-24'); }, 3000);
+        }
+        
+        function copyToClipboard() {
+            const code = document.getElementById('detail-code').innerText;
+            navigator.clipboard.writeText(code).then(() => { showToast("Copied to clipboard!"); });
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchScripts();
+            fetchExecutors();
+            showPage('home');
+        });
+    </script>
+</body>
+</html>
